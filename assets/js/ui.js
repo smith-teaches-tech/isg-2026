@@ -57,6 +57,27 @@ export function chrome(root) {
   return root;
 }
 
+/* QR + typed URL, top-right of the big screen, on every slide.
+   Large while the room is arriving, then shrinks — latecomers can
+   still scan at minute 40. Both routes shown because a laptop is a
+   better device than a phone for the two typing activities. */
+export function joinBadge() {
+  const cfg = window.ISG_CONFIG;
+  const box = h('div', { class: 'joinbadge', id: 'joinbadge' },
+    h('img', { src: '../assets/img/ui/qr.svg', alt: 'Join', class: 'joinbadge__qr' }),
+    h('div', { class: 'joinbadge__url mono' }, cfg.shortUrl),
+    h('div', { class: 'joinbadge__hint' }, 'scan, or type it on your laptop')
+  );
+  document.body.append(box);
+  return box;
+}
+
+/* size: 'big' while arriving, 'small' once the room is in. */
+export function setJoinSize(size) {
+  const el = document.getElementById('joinbadge');
+  if (el) el.dataset.size = size;
+}
+
 export function offlineBadge() {
   document.body.append(h('div', { class: 'offline-flag' }, 'offline'));
 }

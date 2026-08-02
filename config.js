@@ -18,13 +18,19 @@ window.ISG_CONFIG = {
   // Not real security — just stops an audience member wandering into it.
   presenterKey: "backstage",
 
-  // How often audience + screen ask the sheet for news, in ms.
-  // 1500 feels live. Don't go below 1000 — Apps Script quota.
+  // How often the BIG SCREEN asks the sheet for news, in ms.
+  // This one must feel live. Don't go below 1000.
   pollMs: 1500,
+
+  // How often an AUDIENCE DEVICE asks. Deliberately slower: a phone
+  // finding out 4 seconds late is invisible, and audience polling is
+  // the only thing here that scales with headcount. Both are jittered
+  // ±20% so devices don't synchronise into spikes.
+  pollMsAudience: 4000,
 
   // Force offline mode even if an endpoint is set (dry runs, dead wifi).
   forceOffline: false,
 
   // Shown in the corner of every screen. Set once you've made the TinyURL.
-  shortUrl: "tinyurl.com/isg-write"
+  shortUrl: "tinyurl.com/5n6rbjar"
 };

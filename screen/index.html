@@ -5,12 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ISG Learns — Screen</title>
 
-<!-- The projector. Open fullscreen (F11 / ⌃⌘F) and leave it.
-     Follows the presenter control page; never touched during the session. -->
+<!-- The projector, and the thing your clicker talks to.
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1">
-<link rel="stylesheet" href="../assets/css/base.css?v=1">
-<script src="../config.js?v=1"></script>
+     Open fullscreen (⌃⌘F) on the laptop driving the projector.
+     A presentation clicker sends arrow / page keys to this page:
+       →  ⏎  space  PageDown   forward
+       ←  PageUp                back
+     Forward is the only control you need. It walks slide beats,
+     then opens the interaction, locks it, reveals it, moves on.
+
+     The presenter page on your phone is for out-of-band moves
+     (jump, inject fallback, unlock) — not required to run. -->
+
+<link rel="stylesheet" href="../assets/css/tokens.css?v=3">
+<link rel="stylesheet" href="../assets/css/base.css?v=3">
+<script src="../config.js?v=3"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -18,6 +27,21 @@
     position: fixed; left: var(--s-5); bottom: var(--s-5);
     font-family: var(--font-mono); font-size: var(--t-sm);
     color: var(--accent-hot); opacity: .85;
+  }
+  /* Bottom-left segment marker — only you will read it from the stage. */
+  .segmark {
+    position: fixed; left: var(--s-5); top: var(--s-5);
+    font-family: var(--font-mono); font-size: var(--t-xs);
+    color: var(--ink-faint); opacity: .5;
+  }
+  /* Blank-screen button on the clicker. */
+  body.blacked > *  { visibility: hidden; }
+  body.blacked      { background: #000; }
+  /* Clicker keys go nowhere if this window isn't focused. Say so. */
+  #focushint {
+    position: fixed; inset: auto 0 var(--s-7) 0; text-align: center;
+    font-size: var(--t-base); color: var(--accent-warm);
+    font-family: var(--font-mono); z-index: 70;
   }
 </style>
 </head>
@@ -28,60 +52,155 @@
     <div class="state-msg"><div class="pill">screen ready</div></div>
   </main>
 </div>
+<div class="segmark" id="segmark"></div>
+<div id="focushint" hidden>click once on this window — the clicker needs it focused</div>
 
 <script type="module">
 import { bus, loadActivity, loadSession } from '../assets/js/bus.js';
 import { api } from '../assets/js/api.js';
-import { h, mount, chrome, offlineBadge } from '../assets/js/ui.js';
+import { advance, back, segmentAt } from '../assets/js/flow.js';
+import { loadSlide, stepCount, applySteps, placeholder } from '../assets/js/slides.js';
+import { h, mount, joinBadge, setJoinSize, offlineBadge } from '../assets/js/ui.js';
 
 const stage = document.getElementById('stage');
-chrome(document.body);
+const session = await loadSession('../');
+joinBadge();
 if (api.OFFLINE) offlineBadge();
 
-const session = await loadSession('../');
-let currentId = undefined, mod = null;
+let steps = 0;          // beats in the slide currently on screen
+let sig   = '';         // last thing drawn, to avoid needless redraws
+let mod   = null;       // loaded activity module
+let modId = null;
 
-bus.subscribe(async ({ state }) => {
-  const { activity, phase } = state;
+bus.subscribe(({ state }) => { draw(state); });
 
-  if (!activity) {
-    mount(stage, h('div', { class: 'state-msg fade-in' },
+async function draw(state) {
+  const { segment, step, phase } = state;
+  const seg = segmentAt(session, segment);
+
+  document.getElementById('segmark').textContent =
+    segment ? `${segment}/${session.segments.length} · ${phase}` : '';
+
+  /* The join badge is big while people are arriving, then gets out
+     of the way — but never leaves, for latecomers. */
+  setJoinSize(segment <= 1 ? 'big' : 'small');
+
+  // ---- pre-session title card ----
+  if (!seg) {
+    if (sig === 'title') return;
+    sig = 'title';
+    return mount(stage, h('div', { class: 'center fade-in' },
       h('h1', {}, session.title),
-      h('p', { class: 'muted' }, session.subtitle),
-      h('div', { class: 'pill' }, 'scan the code to join')));
-    currentId = null;
+      h('p', { class: 'muted', style: 'font-size:var(--t-xl)' }, session.subtitle)));
+  }
+
+  // ---- interaction on screen ----
+  if (phase !== 'idle' && seg.activity) {
+    if (modId !== seg.activity) {
+      modId = seg.activity; mod = null;
+      try { mod = await loadActivity(seg.activity, '../'); }
+      catch {
+        sig = 'missing:' + seg.activity;
+        return mount(stage, h('div', { class: 'state-msg' },
+          h('p', { class: 'faint mono' }, seg.activity + ' — not built yet')));
+      }
+    }
+    if (!mod) return;
+
+    const unique = bus.uniqueFor(seg.activity);
+    const rows   = bus.rowsFor(seg.activity);
+    const s = `act:${seg.activity}:${phase}:${rows.length}`;
+    if (s === sig) return;
+    sig = s;
+
+    const root = h('div', { style: 'width:100%' });
+    mount(stage, root);
+    return mod.screen.render({ root, phase, rows, unique, total: unique.length, session, bus });
+  }
+
+  // ---- slide ----
+  const s = `slide:${segment}:${step}`;
+  if (s === sig) return;
+  const sameSlide = sig.startsWith(`slide:${segment}:`);
+  sig = s;
+
+  if (!sameSlide) {
+    const html = await loadSlide(seg.slide, '../');
+    const box = h('div', { class: 'slide fade-in' });
+    box.innerHTML = html || placeholder(seg);
+    mount(stage, box);
+    steps = stepCount(box);
+  }
+  const box = stage.firstElementChild;
+  if (box) applySteps(box, Math.min(step, steps));
+}
+
+/* ---------- the forward button ------------------------------
+   Logitech presenters (R400, R500, Spotlight) send:
+     Next        → PageDown / Right Arrow
+     Previous    → PageUp   / Left Arrow
+     Blank       → b or .        (handled: blacks the screen)
+     Start/Stop  → F5 / Escape   (F5 is swallowed — see below)
+   ------------------------------------------------------------ */
+
+const FWD  = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'];
+const BACK = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'];
+
+let moving = false;
+
+addEventListener('keydown', async e => {
+
+  /* The clicker's "start presentation" button sends F5, which would
+     RELOAD this page mid-session. Swallow it. (Even if it got through
+     we'd recover — the running order lives in the sheet, not in this
+     tab — but a two-second white flash on the projector is bad.) */
+  if (e.key === 'F5') { e.preventDefault(); return; }
+
+  /* Blank-screen button. Same key PowerPoint uses. */
+  if (e.key === 'b' || e.key === 'B' || e.key === '.') {
+    e.preventDefault();
+    document.body.classList.toggle('blacked');
     return;
   }
 
-  if (activity !== currentId) {
-    currentId = activity;
-    mod = null;
-    try { mod = await loadActivity(activity, '../'); }
-    catch {
-      mount(stage, h('div', { class: 'state-msg' }, h('p', { class: 'faint mono' }, activity + ' — not built yet')));
-      return;
-    }
-  }
-  // Runs on every tick that brought news, so live walls trickle in.
-  if (mod) draw(phase);
+  const fwd = FWD.includes(e.key), bak = BACK.includes(e.key);
+  if (!fwd && !bak) return;
+  e.preventDefault();
+  if (document.body.classList.contains('blacked')) return;  // frozen while blank
+  if (moving) return;                  // clickers double-fire; ignore the echo
+  moving = true;
+  const next = (fwd ? advance : back)(session, bus.state, steps);
+  await bus.setState(next);
+  setTimeout(() => { moving = false; }, 180);
 });
 
-let lastSig = '';
-function draw(phase) {
-  const rows   = bus.rowsFor(currentId);
-  const unique = bus.uniqueFor(currentId);
+/* ---------- focus ------------------------------------------
+   A clicker is just a keyboard. Keys go nowhere unless this
+   window has focus — the single most likely way to look broken
+   in front of a room. So: say so on screen when focus is lost,
+   and make the click that restores focus NOT also advance. */
 
-  // Cheap guard against redrawing an unchanged screen every 1.5s.
-  const sig = currentId + '|' + phase + '|' + rows.length;
-  if (sig === lastSig) return;
-  lastSig = sig;
+let refocusedAt = 0;
+addEventListener('blur',  () => { refocusedAt = 0; showFocusHint(true); });
+addEventListener('focus', () => { refocusedAt = Date.now(); showFocusHint(false); });
 
-  const root = h('div', { style: 'width:100%' });
-  mount(stage, root);
-  mod.screen.render({ root, phase, rows, unique, total: unique.length, session, bus });
+addEventListener('click', () => {
+  if (Date.now() - refocusedAt < 400) return;   // that click was just for focus
+  if (document.body.classList.contains('blacked')) return;
+  dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+});
+
+function showFocusHint(on) {
+  document.getElementById('focushint').hidden = !on;
 }
 
-bus.start();
+/* Backstop: blur/focus events aren't fired identically by every OS and
+   browser combination, and being wrong about this on the day is
+   expensive. Poll the real answer too. */
+setInterval(() => showFocusHint(!document.hasFocus()), 1000);
+showFocusHint(!document.hasFocus());
+
+bus.start('screen');
 
 setInterval(() => {
   document.querySelector('.conn-warn')?.remove();

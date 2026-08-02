@@ -6,25 +6,25 @@
 <meta name="theme-color" content="#0d1117">
 <title>ISG Learns — Taking Back At-Home Writing</title>
 
-<!-- THE audience page. One scan, one tab, never navigates away.
-     The presenter decides what this shows; it follows along. -->
+<!-- THE audience page. Phone or laptop, same URL.
+     One scan, one tab, never navigates away. It follows the room:
+     when the presenter opens an interaction, this becomes it. -->
 
-<link rel="stylesheet" href="assets/css/tokens.css?v=1">
-<link rel="stylesheet" href="assets/css/base.css?v=1">
-<script src="config.js?v=1"></script>
+<link rel="stylesheet" href="assets/css/tokens.css?v=3">
+<link rel="stylesheet" href="assets/css/base.css?v=3">
+<script src="config.js?v=3"></script>
 </head>
 <body>
 
 <div class="app">
   <main class="app-body" id="stage">
-    <div class="state-msg">
-      <div class="pill">connecting</div>
-    </div>
+    <div class="state-msg"><div class="pill">connecting</div></div>
   </main>
 </div>
 
 <script type="module">
 import { bus, loadActivity, loadSession } from './assets/js/bus.js';
+import { segmentAt } from './assets/js/flow.js';
 import { api } from './assets/js/api.js';
 import { device } from './assets/js/device.js';
 import { h, mount, chrome, offlineBadge } from './assets/js/ui.js';
@@ -34,49 +34,45 @@ chrome(document.body);
 if (api.OFFLINE) offlineBadge();
 
 const session = await loadSession();
-let currentId = undefined;
-let currentPhase = undefined;
-let mod = null;
+let sig = '', mod = null, modId = null;
 
 bus.subscribe(async ({ state }) => {
-  const { activity, phase } = state;
+  const seg = segmentAt(session, state.segment);
+  const live = seg && seg.activity && state.phase !== 'idle';
 
-  // Nothing running yet — hold the room on a friendly waiting card.
-  if (!activity) {
-    if (currentId !== null) { currentId = null; showWaiting(); }
-    return;
+  if (!live) {
+    if (sig === 'wait') return;
+    sig = 'wait';
+    return showWaiting();
   }
 
-  const activityChanged = activity !== currentId;
-  if (activityChanged) {
-    currentId = activity;
-    mod = null;
+  if (modId !== seg.activity) {
+    modId = seg.activity; mod = null;
     mount(stage, h('div', { class: 'state-msg' }, h('div', { class: 'pill' }, 'loading')));
-    try {
-      mod = await loadActivity(activity);
-    } catch (err) {
-      console.error(err);
-      mount(stage, h('div', { class: 'state-msg' },
-        h('p', {}, 'This activity is still being built.'),
-        h('p', { class: 'faint mono' }, activity)));
-      return;
+    try { mod = await loadActivity(seg.activity); }
+    catch {
+      sig = 'missing';
+      return mount(stage, h('div', { class: 'state-msg' },
+        h('p', {}, 'This one is still being built.'),
+        h('p', { class: 'faint mono' }, seg.activity)));
     }
   }
-
   if (!mod) return;
-  if (!activityChanged && phase === currentPhase) return;
-  currentPhase = phase;
+
+  const s = `${seg.activity}:${state.phase}`;
+  if (s === sig) return;
+  sig = s;
 
   const root = h('div', { class: 'fade-in' });
   mount(stage, root);
 
   mod.phone.render({
     root,
-    phase,
+    phase: state.phase,
     session,
     device,
-    mine: (slot = 'a') => device.answer(activity, slot),
-    submit: (payload, slot = 'a') => api.submit(activity, payload, slot)
+    mine: (slot = 'a') => device.answer(seg.activity, slot),
+    submit: (payload, slot = 'a') => api.submit(seg.activity, payload, slot)
   });
 });
 
@@ -89,20 +85,19 @@ function showWaiting() {
   ));
 }
 
-// Optional name, collected once while people wait. Anonymous by default;
+// Optional name, collected while people wait. Anonymous by default;
 // it exists only so a good answer can be called on to elaborate.
 function nameField() {
-  const input = h('input', {
-    class: 'input', type: 'text', placeholder: 'optional', value: device.name,
-    onchange: e => { device.name = e.target.value; }
-  });
   return h('div', { class: 'card', style: 'width:100%;max-width:22rem;text-align:left' },
     h('div', { class: 'field', style: 'margin:0' },
       h('label', {}, 'Name (optional — so I can call on you)'),
-      input));
+      h('input', {
+        class: 'input', type: 'text', placeholder: 'optional', value: device.name,
+        onchange: e => { device.name = e.target.value; }
+      })));
 }
 
-bus.start();
+bus.start('audience');
 </script>
 </body>
 </html>

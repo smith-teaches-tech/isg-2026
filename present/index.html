@@ -6,30 +6,33 @@
 <title>ISG Learns — Presenter</title>
 
 <!-- Second device, in your hand. Requires ?key=<presenterKey>.
-     Drives the big screen and every phone in the room. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=1">
-<link rel="stylesheet" href="../assets/css/base.css?v=1">
-<script src="../config.js?v=1"></script>
+     You do NOT need this to run the session — the clicker driving
+     /screen/ walks the whole thing forward. This is for the moves
+     that aren't on that line: jump to a segment, inject fallback
+     data, unlock a vote, clear a dry run. -->
+
+<link rel="stylesheet" href="../assets/css/tokens.css?v=3">
+<link rel="stylesheet" href="../assets/css/base.css?v=3">
+<script src="../config.js?v=3"></script>
 <style>
-  .app-body { max-width: 560px; }
+  .app-body { max-width: 560px; padding-bottom: var(--s-8); }
   .seg {
     display: grid; grid-template-columns: 2.2rem 1fr auto;
     gap: var(--s-3); align-items: center;
-    padding: var(--s-3); border-bottom: 1px solid var(--line);
-    cursor: pointer;
+    padding: var(--s-3); border-bottom: 1px solid var(--line); cursor: pointer;
   }
   .seg:last-child { border-bottom: 0; }
-  .seg:hover { background: var(--bg-input); }
   .seg[data-live="1"] { background: rgba(76,154,255,.12); box-shadow: inset 3px 0 0 var(--accent); }
-  .seg .n  { font-family: var(--font-mono); color: var(--ink-faint); font-size: var(--t-sm); }
-  .seg .t  { font-size: var(--t-sm); }
-  .seg .a  { font-size: var(--t-xs); color: var(--accent); font-family: var(--font-mono); }
+  .seg .n { font-family: var(--font-mono); color: var(--ink-faint); font-size: var(--t-sm); }
+  .seg .t { font-size: var(--t-sm); }
+  .seg .a { font-size: var(--t-xs); color: var(--accent); font-family: var(--font-mono); }
   .seg[data-built="0"] .a { color: var(--ink-faint); }
-  .phases  { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
-  .phases .btn[data-on="1"] { background: var(--accent); border-color: var(--accent); color: #05121f; }
-  .bar-row { display: flex; gap: var(--s-2); }
-  .live-count { font-family: var(--font-mono); color: var(--accent-cool); }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-2); }
+  .btn[data-on="1"] { background: var(--accent); border-color: var(--accent); color: #05121f; }
+  .nav .btn { padding: var(--s-5) var(--s-4); font-size: var(--t-lg); }
+  .live-count { font-family: var(--font-mono); color: var(--accent-cool); font-size: var(--t-lg); }
 </style>
 </head>
 <body>
@@ -43,24 +46,31 @@
 
     <div id="panel" hidden>
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-3)">
-          <strong id="now">— nothing running —</strong>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-2)">
+          <strong id="now">—</strong>
           <span class="live-count" id="count">0</span>
         </div>
-        <div class="phases">
-          <button class="btn btn--sm" data-phase="idle">idle</button>
+        <p class="faint mono" style="font-size:var(--t-xs);margin-bottom:var(--s-3)" id="where"></p>
+
+        <div class="grid2 nav" style="margin-bottom:var(--s-3)">
+          <button class="btn" id="back">‹ back</button>
+          <button class="btn btn--primary" id="fwd">next ›</button>
+        </div>
+
+        <div class="grid4">
+          <button class="btn btn--sm" data-phase="idle">slide</button>
           <button class="btn btn--sm" data-phase="input">open</button>
           <button class="btn btn--sm" data-phase="locked">lock</button>
           <button class="btn btn--sm" data-phase="reveal">reveal</button>
         </div>
-        <div class="bar-row" style="margin-top:var(--s-3)">
+
+        <div class="grid2" style="margin-top:var(--s-3)">
           <button class="btn btn--sm btn--ghost" id="fallback">inject fallback</button>
           <button class="btn btn--sm btn--ghost" id="clear">clear responses</button>
         </div>
       </div>
 
       <div class="card" style="padding:0" id="segs"></div>
-
       <p class="faint mono center" style="font-size:var(--t-xs)" id="mode"></p>
     </div>
   </main>
@@ -68,74 +78,72 @@
 
 <script type="module">
 import { bus, loadSession, loadFallback } from '../assets/js/bus.js';
+import { advance, back as flowBack, segmentAt } from '../assets/js/flow.js';
 import { api } from '../assets/js/api.js';
 import { h, mount } from '../assets/js/ui.js';
 
 const cfg = window.ISG_CONFIG;
 const key = new URLSearchParams(location.search).get('key');
 
-if (key !== cfg.presenterKey) {
-  document.getElementById('gate').hidden = false;
-} else {
-  document.getElementById('panel').hidden = false;
-  init();
-}
+if (key !== cfg.presenterKey) document.getElementById('gate').hidden = false;
+else { document.getElementById('panel').hidden = false; init(); }
 
 async function init() {
   const session = await loadSession('../');
-  const segs = document.getElementById('segs');
   document.getElementById('mode').textContent =
     api.OFFLINE ? 'OFFLINE MODE — nothing is being saved' : 'live · room ' + cfg.room;
 
-  // Run of show, straight from session.json. Tap a row to make it current.
-  mount(segs, session.segments.map(s => {
+  mount(document.getElementById('segs'), session.segments.map(s => {
     const meta = s.activity ? session.activities[s.activity] : null;
     return h('div', {
-      class: 'seg',
-      'data-id': s.activity || '',
-      'data-built': meta?.built ? '1' : '0',
-      onclick: () => go(s.activity)
+      class: 'seg', 'data-n': s.n, 'data-built': meta?.built ? '1' : '0',
+      onclick: () => bus.setState({ segment: s.n, step: 0, phase: 'idle' })
     },
       h('span', { class: 'n' }, s.n),
       h('span', { class: 't' }, s.title),
-      h('span', { class: 'a' }, s.activity ? (meta.built ? meta.label.split(' · ')[0] : '—') : '')
-    );
+      h('span', { class: 'a' }, meta ? meta.label.split(' · ')[0] : ''));
   }));
 
-  async function go(activity) {
-    if (!activity) return;
-    await bus.setState({ activity, phase: 'input' });
-  }
+  /* This page can't know how many beats the current slide has —
+     only /screen/ has the DOM. So next/back here move whole
+     segments and phases, never individual beats. */
+  document.getElementById('fwd').onclick  = () => bus.setState(advance(session, bus.state, 0));
+  document.getElementById('back').onclick = () => bus.setState(flowBack(session, bus.state, 0));
 
   document.querySelectorAll('[data-phase]').forEach(btn => {
-    btn.onclick = () => bus.setState({ activity: bus.state.activity, phase: btn.dataset.phase });
+    btn.onclick = () => bus.setState({ ...bus.state, phase: btn.dataset.phase });
   });
 
+  const current = () => segmentAt(session, bus.state.segment);
+
   document.getElementById('fallback').onclick = async () => {
-    const id = bus.state.activity;
-    if (!id) return;
+    const id = current()?.activity;
+    if (!id) return alert('This segment has no interaction.');
     const rows = await loadFallback(id, '../');
     if (!rows.length) return alert('No fallback file for ' + id);
     await api.injectFallback(id, rows);
   };
 
   document.getElementById('clear').onclick = async () => {
-    const id = bus.state.activity;
+    const id = current()?.activity;
     if (id && confirm('Clear all responses for ' + id + '?')) await api.clear(id);
   };
 
   bus.subscribe(({ state }) => {
-    const meta = state.activity ? session.activities[state.activity] : null;
-    document.getElementById('now').textContent = meta ? meta.label : '— nothing running —';
+    const seg = segmentAt(session, state.segment);
+    const meta = seg?.activity ? session.activities[seg.activity] : null;
+    document.getElementById('now').textContent = seg ? seg.title : '— title card —';
+    document.getElementById('where').textContent =
+      `segment ${state.segment} · beat ${state.step} · ${state.phase}` + (meta ? ` · ${meta.label}` : '');
     document.getElementById('count').textContent =
-      state.activity ? bus.uniqueFor(state.activity).length : 0;
+      seg?.activity ? bus.uniqueFor(seg.activity).length : '';
     document.querySelectorAll('.seg').forEach(el =>
-      el.dataset.live = el.dataset.id === state.activity ? '1' : '0');
+      el.dataset.live = Number(el.dataset.n) === state.segment ? '1' : '0');
     document.querySelectorAll('[data-phase]').forEach(b =>
       b.dataset.on = b.dataset.phase === state.phase ? '1' : '0');
   });
 
-  bus.start();
+  bus.start('screen');
 }
 </script>
 </body>

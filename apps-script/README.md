@@ -37,17 +37,26 @@ The `responses` tab should have a row.
   1.5s for 75 minutes is roughly 240k reads — **too many.** See below.
 - **`clear` shifts row numbers**, so reload the screen page after clearing.
 
-## Polling load — read this before the session
+## Polling load — the arithmetic
 
-Each device polls every `pollMs`. 80 devices × 75 min ÷ 1.5s ≈ 240,000 GETs.
-That will hit the quota. Three fixes, in order of preference:
+Sized for **~30 people**, which is the realistic number for this room.
 
-1. **Only the screen and presenter poll** (2 devices). Phones don't need to
-   listen — they only submit. This is the default assumption of the architecture
-   *except* that phones need to know which activity is current.
-2. **Phones poll slowly.** Set `pollMs: 1500` for the screen and let phones use
-   5000ms. A phone finding out 5 seconds late is invisible; the screen isn't.
-3. **Cache the state.** Use `CacheService` in `doGet` so repeat polls don't
-   re-read the sheet.
+Audience devices poll every **4s** (`pollMsAudience`), jittered ±20% so they
+don't synchronise into spikes. The big screen polls every **1.5s** (`pollMs`)
+because that one has to feel live.
 
-Do the arithmetic for your real headcount before the dry run.
+- 30 phones ÷ 4s ≈ **7.5 requests/second**
+- Each `doGet` is a small sheet read, roughly 100–200ms
+- Average concurrent executions ≈ **1**, against a limit of 30
+
+That's comfortable. Writes are trivial by comparison — about 30 submissions per
+activity, nine activities, ~270 writes for the whole session, and `LockService`
+serialises them.
+
+**If the room is much bigger than expected**, the single most effective lever is
+raising `pollMsAudience` to 8000. Nobody will notice.
+
+**What to actually watch in the dry run:** not the quota — the *burst*. All 30
+people answering within the same 10 seconds is the only moment of real
+concurrency in the session. If submissions get dropped there, the client-side
+retry queue in `api.js` should catch them; confirm it does.

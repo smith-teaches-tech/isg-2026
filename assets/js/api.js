@@ -40,7 +40,7 @@ const SIM_KEY = 'isg.sim';
 
 const sim = {
   rows: [],
-  state: { activity: null, phase: 'idle', seq: 0 },
+  state: { segment: 0, step: 0, phase: 'idle', seq: 0 },
   load() {
     try {
       const d = JSON.parse(localStorage.getItem(SIM_KEY) || 'null');
@@ -59,7 +59,7 @@ if (OFFLINE) sim.load();
 export function resetOffline() {
   localStorage.removeItem(SIM_KEY);
   sim.rows = [];
-  sim.state = { activity: null, phase: 'idle', seq: 0 };
+  sim.state = { segment: 0, step: 0, phase: 'idle', seq: 0 };
 }
 
 /* ---------- helpers ---------------------------------------- */
@@ -125,11 +125,11 @@ export const api = {
       ok: true,
       rows: (r.rows || []).map(x => ({ ...x, payload: safeParse(x.payload) })),
       cursor: r.cursor ?? cursor,
-      state: r.state || { activity: null, phase: 'idle', seq: 0 }
+      state: r.state || { segment: 0, step: 0, phase: 'idle', seq: 0 }
     };
   },
 
-  /* Presenter drives the room: which activity, and which phase.
+  /* Presenter drives the room: which segment, which beat, which phase.
      phase: 'idle' | 'input' | 'locked' | 'reveal' */
   async setState(next) {
     if (OFFLINE) {

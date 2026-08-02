@@ -7,9 +7,49 @@ Sheet via Apps Script. No build step, no dependencies, no npm.
 
 | Who | Where | Notes |
 |---|---|---|
-| Audience | `/` | The one URL that gets scanned. Never navigates away. |
-| Big screen | `/screen/` | Open fullscreen on the projector, then leave it alone. |
-| Presenter | `/present/?key=backstage` | Second device, in your hand. |
+| Audience | `/` | The one URL that gets scanned. Phone or laptop, same address. |
+| Big screen | `/screen/` | Fullscreen on the projector. **Your clicker talks to this.** |
+| Presenter | `/present/?key=backstage` | Second device. Optional — for out-of-band moves only. |
+
+## The forward button
+
+The whole 75 minutes sits on one axis. Your clicker sends → to `/screen/`, and
+that single key walks everything:
+
+```
+slide beat 1 → beat 2 → beat 3
+  → open the interaction → lock it → reveal it
+  → next segment
+```
+
+← goes back. Segments with no interaction just run out of beats and move on.
+Clicking the mouse anywhere on the screen also advances.
+
+`/present/` on your phone is for the things that aren't on that line: jump to a
+segment, inject fallback data, unlock a vote, clear a dry run. You can run the
+entire session without it.
+
+## Writing a slide
+
+Slides are **plain HTML fragments** in `slides/`. No `<head>`, no `<script>`,
+no boilerplate — just content, using the shared classes. Write them yourself.
+
+```html
+<div class="center">
+  <h1>What happens to student brains</h1>
+  <p data-step="1">MIT Media Lab, 54 participants, four months.</p>
+  <p data-step="2">Lower connectivity in every band measured.</p>
+  <img data-step="3" src="../assets/img/slides/04-brain-scan.png">
+</div>
+```
+
+`data-step="N"` means "appears on the Nth click." Anything without it is
+visible immediately. The file name must match the `slide` field in
+`session.json`.
+
+**A segment with no slide file still works** — it shows its title as a
+placeholder. So you can walk the full 22-segment running order and rehearse
+timing before writing a single slide.
 
 ## Run it locally
 

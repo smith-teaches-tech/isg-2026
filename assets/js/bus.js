@@ -16,7 +16,11 @@ let timer  = null;
 export const bus = {
 
   rows:  [],
-  state: { activity: null, phase: 'idle', seq: -1 },
+
+  /* segment 0 = pre-session title card.
+     step    = which beat of the current slide is showing.
+     phase   = idle (slide) | input | locked | reveal (interaction). */
+  state: { segment: 0, step: 0, phase: 'idle', seq: -1 },
   connected: true,
 
   /* fn({ rows, state, changedState }) — called on every tick that
@@ -40,8 +44,20 @@ export const bus = {
     return [...byDevice.values()];
   },
 
-  start() {
+  /* role 'screen'   — must feel live, polls fast.
+     role 'audience' — a phone finding out 4s late is invisible, and
+                       30 phones polling fast is the one thing that
+                       could actually overload the Apps Script. */
+  start(role = 'audience') {
     if (timer) return;
+    const base = role === 'screen'
+      ? (CFG.pollMs || 1500)
+      : (CFG.pollMsAudience || 4000);
+
+    /* Jitter so 30 devices don't all hit the endpoint on the same
+       tick. Without this they synchronise and you get spikes. */
+    const wait = () => base * (0.8 + Math.random() * 0.4);
+
     const tick = async () => {
       try {
         const res = await api.since(cursor);
@@ -59,7 +75,7 @@ export const bus = {
         this.connected = false;
         console.warn('[isg] poll failed', err);
       }
-      timer = setTimeout(tick, CFG.pollMs);
+      timer = setTimeout(tick, wait());
     };
     tick();
   },

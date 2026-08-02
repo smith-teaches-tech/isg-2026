@@ -173,6 +173,43 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
   z-index: 50;
 }
 
+/* --- join badge (big screen, top right) --------------------- */
+
+.joinbadge {
+  position: fixed;
+  top: var(--s-5);
+  right: var(--s-5);
+  z-index: 60;
+  text-align: center;
+  transition: transform .6s var(--ease), opacity .6s var(--ease);
+  transform-origin: top right;
+}
+.joinbadge__qr {
+  display: block;
+  width: 220px;
+  height: 220px;
+  transition: width .6s var(--ease), height .6s var(--ease);
+}
+.joinbadge__url  { font-size: var(--t-base); color: var(--ink); margin-top: var(--s-2); }
+.joinbadge__hint { font-size: var(--t-sm); color: var(--ink-faint); margin-top: 2px; }
+
+/* Once the room is in, it gets out of the way but never disappears. */
+.joinbadge[data-size="small"] { transform: scale(.42); opacity: .75; }
+.joinbadge[data-size="small"] .joinbadge__hint { opacity: 0; }
+
+/* --- slide stage ------------------------------------------- */
+
+.slide {
+  width: 100%;
+  max-width: 62ch;
+  margin: 0 auto;
+}
+.slide.wide { max-width: none; }
+.slide h1 { font-size: var(--t-2xl); margin-bottom: var(--s-5); }
+.slide p  { font-size: var(--t-lg); color: var(--ink-dim); }
+.slide img { max-width: 100%; border-radius: var(--radius); }
+.slide .lead { color: var(--ink); }
+
 .fade-in { animation: fade-in .35s var(--ease) both; }
 @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } }
 

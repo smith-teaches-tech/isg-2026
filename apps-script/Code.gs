@@ -40,11 +40,12 @@ function json_(obj) {
 
 function getState_() {
   var rows = control_().getDataRange().getValues();
-  var s = { activity: null, phase: 'idle', seq: 0 };
+  var s = { segment: 0, step: 0, phase: 'idle', seq: 0 };
   for (var i = 1; i < rows.length; i++) {
-    if (rows[i][0] === 'activity') s.activity = rows[i][1] || null;
-    if (rows[i][0] === 'phase')    s.phase    = rows[i][1] || 'idle';
-    if (rows[i][0] === 'seq')      s.seq      = Number(rows[i][1]) || 0;
+    if (rows[i][0] === 'segment') s.segment = Number(rows[i][1]) || 0;
+    if (rows[i][0] === 'step')    s.step    = Number(rows[i][1]) || 0;
+    if (rows[i][0] === 'phase')   s.phase   = rows[i][1] || 'idle';
+    if (rows[i][0] === 'seq')     s.seq     = Number(rows[i][1]) || 0;
   }
   return s;
 }
@@ -116,8 +117,9 @@ function doPost(e) {
 
       case 'setState':
         if (body.key !== PRESENTER_KEY) return json_({ ok: false, error: 'key' });
-        if (body.activity !== undefined) setKey_('activity', body.activity || '');
-        if (body.phase !== undefined)    setKey_('phase', body.phase);
+        if (body.segment !== undefined) setKey_('segment', body.segment);
+        if (body.step !== undefined)    setKey_('step', body.step);
+        if (body.phase !== undefined)   setKey_('phase', body.phase);
         setKey_('seq', (getState_().seq || 0) + 1);
         return json_({ ok: true, state: getState_() });
 
