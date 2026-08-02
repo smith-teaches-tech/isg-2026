@@ -32,5 +32,5 @@ window.ISG_CONFIG = {
   forceOffline: false,
 
   // Shown in the corner of every screen. Set once you've made the TinyURL.
-  shortUrl: "tinyurl.com/5n6rbjar"
+  shortUrl: "tinyurl.com/isg-write"
 };
