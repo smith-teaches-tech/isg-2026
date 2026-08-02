@@ -170,8 +170,14 @@ addEventListener('keydown', async e => {
   if (moving) return;                  // clickers double-fire; ignore the echo
   moving = true;
   const next = (fwd ? advance : back)(session, bus.state, steps);
-  await bus.setState(next);
-  setTimeout(() => { moving = false; }, 180);
+
+  /* `moving` MUST be released even if the write fails. Without the
+     finally, one failed setState leaves it true forever and the
+     clicker is dead for the rest of the session — the worst
+     possible failure, because it looks like broken hardware. */
+  try { await bus.setState(next); }
+  catch (err) { console.warn('[isg] could not advance', err); }
+  finally { setTimeout(() => { moving = false; }, 180); }
 });
 
 /* ---------- focus ------------------------------------------

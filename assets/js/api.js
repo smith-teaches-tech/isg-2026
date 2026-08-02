@@ -64,6 +64,20 @@ export function resetOffline() {
 
 /* ---------- helpers ---------------------------------------- */
 
+/* A refusal from the endpoint is a FAILURE, not an empty answer.
+
+   This matters more than it looks. If ROOM in Code.gs and `room` in
+   config.js ever disagree, every call comes back { ok:false } — and
+   if we treated that as a normal response, `since` would hand the bus
+   a default state of segment 0 / idle and the projector would jump
+   back to the title card mid-session. Throw instead: the poll is
+   marked failed, the "lost the sheet" warning appears, and the screen
+   keeps showing what it was showing. */
+function check_(j) {
+  if (j && j.ok === false) throw new Error('endpoint refused: ' + (j.error || '?'));
+  return j;
+}
+
 async function post(body) {
   const res = await fetch(CFG.endpoint, {
     method: 'POST',
@@ -71,7 +85,7 @@ async function post(body) {
     body: JSON.stringify({ room: CFG.room, ...body })
   });
   if (!res.ok) throw new Error('POST ' + res.status);
-  return res.json();
+  return check_(await res.json());
 }
 
 async function get(params) {
@@ -80,7 +94,7 @@ async function get(params) {
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
   const res = await fetch(url, { method: 'GET' });
   if (!res.ok) throw new Error('GET ' + res.status);
-  return res.json();
+  return check_(await res.json());
 }
 
 /* ---------- public API -------------------------------------- */
@@ -138,7 +152,15 @@ export const api = {
       sim.save();
       return { ok: true, state: sim.state };
     }
-    return post({ action: 'setState', ...next, key: CFG.presenterKey });
+    /* The forward button must not depend on one packet arriving.
+       Three quick attempts before giving up — a single dropped
+       request should never cost a beat in front of the room. */
+    let err;
+    for (let i = 0; i < 3; i++) {
+      try { return await post({ action: 'setState', ...next, key: CFG.presenterKey }); }
+      catch (e) { err = e; await new Promise(r => setTimeout(r, 250 * (i + 1))); }
+    }
+    throw err;
   },
 
   /* Drop pre-loaded sample rows in — bad wifi, low scan rate, or a dry run. */

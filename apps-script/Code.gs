@@ -92,9 +92,13 @@ function doPost(e) {
 
   if (body.room !== ROOM) return json_({ ok: false, error: 'room' });
 
+  /* waitLock THROWS on timeout. Outside the try that becomes an HTML
+     error page, which the client's res.json() chokes on. Inside it,
+     the client gets clean JSON, marks the submit failed, and the
+     retry queue picks it up on the next poll. */
   var lock = LockService.getScriptLock();
-  lock.waitLock(20000);                // survives a burst of ~80 at once
   try {
+    lock.waitLock(20000);              // survives the burst when everyone answers at once
     var sh = responses_();
 
     switch (body.action) {
@@ -142,7 +146,9 @@ function doPost(e) {
       }
     }
     return json_({ ok: false, error: 'unknown action' });
+  } catch (err) {
+    return json_({ ok: false, error: String(err) });
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch (e) {}
   }
 }
