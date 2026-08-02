@@ -10,8 +10,9 @@ import { api } from './api.js';
 const CFG = window.ISG_CONFIG;
 
 const listeners = new Set();
-let cursor = 0;
-let timer  = null;
+let cursor  = 0;
+let timer   = null;
+let writing = 0;   // setState calls in flight — see setState() below
 
 export const bus = {
 
@@ -64,7 +65,7 @@ export const bus = {
         this.connected = true;
         cursor = res.cursor;
 
-        const changedState = res.state.seq !== this.state.seq;
+        const changedState = writing === 0 && res.state.seq !== this.state.seq;
         const gotRows = res.rows.length > 0;
 
         if (gotRows) this.rows.push(...res.rows);
@@ -82,10 +83,38 @@ export const bus = {
 
   stop() { clearTimeout(timer); timer = null; },
 
-  /* Presenter calls this; everyone else finds out on the next poll. */
+  /* Presenter calls this; everyone else finds out on the next poll.
+
+     OPTIMISTIC. The projector redraws immediately and the write to the
+     sheet happens behind it. Waiting for the round trip made every
+     press feel like a half-second of nothing, which on stage reads as
+     a broken clicker and makes you press again.
+
+     While a write is in flight we ignore incoming state from polls —
+     otherwise a poll that started before the write lands would carry
+     the OLD state and snap the screen backwards. If the write fails
+     outright we roll back deliberately, and the "lost the sheet"
+     warning is already on screen to explain it. */
   async setState(next) {
-    const res = await api.setState(next);
-    if (res && res.state) { this.state = res.state; emit({ rows: this.rows, state: this.state, changedState: true }); }
+    const prev = this.state;
+    this.state = { ...prev, ...next, seq: prev.seq + 1 };
+    writing++;
+    emit({ rows: this.rows, state: this.state, changedState: true });
+
+    try {
+      const res = await api.setState(next);
+      if (res && res.state) {
+        this.state = res.state;            // server is authoritative once it answers
+        emit({ rows: this.rows, state: this.state, changedState: true });
+      }
+      return res;
+    } catch (err) {
+      this.state = prev;                   // roll back; we never really moved
+      emit({ rows: this.rows, state: this.state, changedState: true });
+      throw err;
+    } finally {
+      writing--;
+    }
   }
 };
 

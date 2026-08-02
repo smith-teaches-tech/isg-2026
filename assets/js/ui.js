@@ -72,10 +72,22 @@ export function joinBadge() {
   return box;
 }
 
-/* size: 'big' while arriving, 'small' once the room is in. */
+/* Where the badge should be right now:
+
+     'big'    — segments 0–1, the room is arriving and this is the point
+     'small'  — an interaction is open, so a latecomer can still join
+                at the one moment it would do them any good
+     'hidden' — a slide is up; the screen belongs to the slide
+
+   The typed URL in the bottom corner (`chrome()` / .urlmark) never
+   leaves, so the address is on screen even while the QR is hidden. */
 export function setJoinSize(size) {
   const el = document.getElementById('joinbadge');
   if (el) el.dataset.size = size;
+  /* Activities lay out against the full screen and know nothing about
+     the badge, so the badge tells THEM: this class reserves the bottom
+     strip. Every future activity gets the clearance for free. */
+  document.body.classList.toggle('badge-bottom', size === 'small');
 }
 
 export function offlineBadge() {

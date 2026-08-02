@@ -26,13 +26,13 @@ window.ISG_CONFIG = {
 
   // How often the BIG SCREEN asks the sheet for news, in ms.
   // This one must feel live. Don't go below 1000.
-  pollMs: 1500,
+  pollMs: 1200,
 
   // How often an AUDIENCE DEVICE asks. Deliberately slower: a phone
   // finding out 4 seconds late is invisible, and audience polling is
   // the only thing here that scales with headcount. Both are jittered
   // ±20% so devices don't synchronise into spikes.
-  pollMsAudience: 4000,
+  pollMsAudience: 2500,
 
   // Force offline mode even if an endpoint is set (dry runs, dead wifi).
   forceOffline: false,

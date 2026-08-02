@@ -230,7 +230,9 @@ function injectCSS() {
   s.textContent = `
   /* Fixed-height stage: the question stays put at the top while
      the wall grows, instead of drifting up with every answer. */
-  .i1-stage { width: 100%; height: 84vh; display: flex; flex-direction: column; }
+  /* 72vh, not more: the join badge parks bottom-right during an
+     interaction and the last column was running underneath it. */
+  .i1-stage { width: 100%; height: 72vh; display: flex; flex-direction: column; }
   .i1-head  { flex: none; display: flex; align-items: baseline; gap: var(--s-4); margin-bottom: var(--s-4); }
   .i1-q     { color: var(--ink-dim); margin: 0; }
   .i1-count { color: var(--ink-faint); font-size: var(--t-base); white-space: nowrap; }

@@ -193,9 +193,26 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
 .joinbadge__url  { font-size: var(--t-base); color: var(--ink); margin-top: var(--s-2); }
 .joinbadge__hint { font-size: var(--t-sm); color: var(--ink-faint); margin-top: 2px; }
 
-/* Once the room is in, it gets out of the way but never disappears. */
-.joinbadge[data-size="small"] { transform: scale(.42); opacity: .75; }
+/* During an interaction it drops to the BOTTOM right — top right is
+   where activity headers and the answer wall live, and it was landing
+   on top of them. */
+.joinbadge[data-size="small"] {
+  top: auto;
+  bottom: var(--s-5);
+  transform: scale(.38);
+  transform-origin: bottom right;
+  opacity: .75;
+}
 .joinbadge[data-size="small"] .joinbadge__hint { opacity: 0; }
+
+/* On a slide, the slide gets the whole screen. The typed URL in the
+   corner still covers anyone who needs the address. */
+.joinbadge[data-size="hidden"] {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.3);
+  transform-origin: top right;
+}
 
 /* --- slide stage ------------------------------------------- */
 
@@ -216,3 +233,9 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* The url mark is on every screen, including slides where the QR is
+   hidden. It fades only while the badge is parked bottom-right, where
+   it would print the same address twice. */
+.urlmark { transition: opacity .4s var(--ease); }
+.screen-root.badge-bottom .urlmark { opacity: 0; }
