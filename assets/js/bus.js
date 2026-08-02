@@ -103,7 +103,10 @@ export const bus = {
 
     try {
       const res = await api.setState(next);
-      if (res && res.state) {
+      /* Press fast enough and two writes are in flight at once. They can
+         come back out of order, and adopting the older one would jump
+         the screen backwards — so only ever move the seq forwards. */
+      if (res && res.state && res.state.seq >= this.state.seq) {
         this.state = res.state;            // server is authoritative once it answers
         emit({ rows: this.rows, state: this.state, changedState: true });
       }
@@ -146,12 +149,4 @@ export async function loadActivity(id, base = '') {
 export async function loadSession(base = '') {
   const res = await fetch(`${base}session.json`, { cache: 'no-store' });
   return res.json();
-}
-
-export async function loadFallback(id, base = '') {
-  try {
-    const res = await fetch(`${base}data/fallback/${id}.json`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    return res.json();
-  } catch { return []; }
 }

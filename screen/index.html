@@ -15,11 +15,11 @@
      then opens the interaction, locks it, reveals it, moves on.
 
      The presenter page on your phone is for out-of-band moves
-     (jump, inject fallback, unlock) — not required to run. -->
+     (jump to a segment, back to the start) — not required to run. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=6">
-<link rel="stylesheet" href="../assets/css/base.css?v=6">
-<script src="../config.js?v=6"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=9">
+<link rel="stylesheet" href="../assets/css/base.css?v=9">
+<script src="../config.js?v=9"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -90,8 +90,11 @@ async function draw(state) {
   /* Big while the room is arriving; small and out of the way while an
      interaction is open, so a latecomer can scan at the only moment
      it helps them; gone entirely on a slide. */
+  /* An open interaction ALWAYS wins. Segment 1 is both the arrival
+     slide and the first interaction, and testing "segment <= 1" first
+     left the full-size badge sitting on top of the gauge histogram. */
   const interacting = phase !== 'idle' && seg && seg.activity;
-  setJoinSize(segment <= 1 ? 'big' : interacting ? 'small' : 'hidden');
+  setJoinSize(interacting ? 'small' : segment <= 1 ? 'big' : 'hidden');
 
   // ---- pre-session title card ----
   if (!seg) {
@@ -138,6 +141,19 @@ async function draw(state) {
     box.innerHTML = html || placeholder(seg);
     mount(stage, box);
     steps = stepCount(box);
+
+    /* Stepping BACK into an earlier segment lands on step 99 — a
+       sentinel for "however many beats that slide turns out to have",
+       because flow.js can't know until the slide is in the DOM.
+
+       It has to be normalised HERE, in the state, not just clamped at
+       render time. Left at 99, pressing back would walk 99 → 98 → 97
+       and you would have to press about a hundred times to get through
+       one slide's beats. Now that we know the real count, write it. */
+    if (step > steps) {
+      bus.setState({ segment, step: steps, phase });
+      return;
+    }
   }
   const box = stage.firstElementChild;
   if (box) applySteps(box, Math.min(step, steps));
@@ -156,7 +172,7 @@ const BACK = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'];
 
 let moving = false;
 
-addEventListener('keydown', async e => {
+addEventListener('keydown', e => {
 
   /* The clicker's "start presentation" button sends F5, which would
      RELOAD this page mid-session. Swallow it. (Even if it got through
@@ -176,16 +192,25 @@ addEventListener('keydown', async e => {
   e.preventDefault();
   if (document.body.classList.contains('blacked')) return;  // frozen while blank
   if (moving) return;                  // clickers double-fire; ignore the echo
-  moving = true;
-  const next = (fwd ? advance : back)(session, bus.state, steps);
+  /* This guard exists ONLY to swallow the duplicate keydown a physical
+     clicker fires within a few milliseconds. It must therefore be a
+     fixed, short debounce — released on a timer started right now, NOT
+     after the sheet write returns.
 
-  /* `moving` MUST be released even if the write fails. Without the
-     finally, one failed setState leaves it true forever and the
-     clicker is dead for the rest of the session — the worst
-     possible failure, because it looks like broken hardware. */
-  try { await bus.setState(next); }
-  catch (err) { console.warn('[isg] could not advance', err); }
-  finally { setTimeout(() => { moving = false; }, 180); }
+     Tying it to the write was wrong: with a ~600ms endpoint it meant
+     you could only advance about once a second, and pressing faster
+     than that silently ate presses. Which is the other half of why it
+     felt laggy.
+
+     So: redraw optimistically, release the guard on its own clock, and
+     let the write finish in the background. A failed write rolls the
+     state back inside bus.setState and the "lost the sheet" warning
+     explains it. */
+  moving = true;
+  setTimeout(() => { moving = false; }, 180);
+
+  const next = (fwd ? advance : back)(session, bus.state, steps);
+  bus.setState(next).catch(err => console.warn('[isg] could not advance', err));
 });
 
 /* ---------- focus ------------------------------------------

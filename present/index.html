@@ -8,13 +8,14 @@
 <!-- Second device, in your hand. Requires ?key=<presenterKey>.
 
      You do NOT need this to run the session — the clicker driving
-     /screen/ walks the whole thing forward. This is for the moves
-     that aren't on that line: jump to a segment, inject fallback
-     data, unlock a vote, clear a dry run. -->
+     /screen/ walks the whole thing forward. This is the escape hatch
+     for the moves that aren't on that line: jump to any segment, go
+     straight to a phase, get back to the title card, clear out your
+     own test answers. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=6">
-<link rel="stylesheet" href="../assets/css/base.css?v=6">
-<script src="../config.js?v=6"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=9">
+<link rel="stylesheet" href="../assets/css/base.css?v=9">
+<script src="../config.js?v=9"></script>
 <style>
   .app-body { max-width: 560px; padding-bottom: var(--s-8); }
   .seg {
@@ -65,7 +66,7 @@
         </div>
 
         <div class="grid2" style="margin-top:var(--s-3)">
-          <button class="btn btn--sm btn--ghost" id="fallback">inject fallback</button>
+          <button class="btn btn--sm btn--ghost" id="reset">↺ back to start</button>
           <button class="btn btn--sm btn--ghost" id="clear">clear responses</button>
         </div>
       </div>
@@ -77,7 +78,7 @@
 </div>
 
 <script type="module">
-import { bus, loadSession, loadFallback } from '../assets/js/bus.js';
+import { bus, loadSession } from '../assets/js/bus.js';
 import { advance, back as flowBack, segmentAt } from '../assets/js/flow.js';
 import { api } from '../assets/js/api.js';
 import { h, mount } from '../assets/js/ui.js';
@@ -116,12 +117,13 @@ async function init() {
 
   const current = () => segmentAt(session, bus.state.segment);
 
-  document.getElementById('fallback').onclick = async () => {
-    const id = current()?.activity;
-    if (!id) return alert('This segment has no interaction.');
-    const rows = await loadFallback(id, '../');
-    if (!rows.length) return alert('No fallback file for ' + id);
-    await api.injectFallback(id, rows);
+  /* The one control you need when something goes wrong: get back to
+     the title card. Confirmed, because hitting it mid-session by
+     accident would be worse than whatever you were escaping. */
+  document.getElementById('reset').onclick = async () => {
+    if (confirm('Back to the title card?')) {
+      await bus.setState({ segment: 0, step: 0, phase: 'idle' });
+    }
   };
 
   document.getElementById('clear').onclick = async () => {

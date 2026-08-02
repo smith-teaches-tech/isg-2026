@@ -25,9 +25,10 @@ export const OFFLINE =
   CFG.endpoint.indexOf('PASTE_') === 0;
 
 /* ---------- offline simulator -------------------------------
-   Backs the whole site when there's no endpoint. Lets you build
-   and rehearse activities with zero network — and doubles as the
-   dead-wifi fallback on the day.
+   Backs the whole site when there's no endpoint. Lets you build and
+   rehearse activities with zero network. It is a BUILD mode only —
+   there is no fake-data fallback in the room. If an interaction fails
+   on the day, Michael asks the question out loud.
 
    Deliberately localStorage, not sessionStorage: localStorage is
    shared across tabs on the same origin, so three tabs on your
@@ -163,26 +164,8 @@ export const api = {
     throw err;
   },
 
-  /* Drop pre-loaded sample rows in — bad wifi, low scan rate, or a dry run. */
-  async injectFallback(activity, rows) {
-    const stamped = rows.map((p, i) => ({
-      ts: new Date().toISOString(),
-      activity,
-      slot: p.__slot || 'a',
-      deviceId: 'demo-' + i,
-      name: p.__name || '',
-      payload: p
-    }));
-
-    if (OFFLINE) { sim.load().rows.push(...stamped); sim.save(); return { ok: true }; }
-    return post({
-      action: 'inject',
-      key: CFG.presenterKey,
-      rows: stamped.map(r => ({ ...r, payload: JSON.stringify(r.payload) }))
-    });
-  },
-
-  /* Clear one activity's responses. Use between the dry run and the session. */
+  /* Clear one activity's responses. Use between your own testing and
+     the real session, so the room never sees your test answers. */
   async clear(activity) {
     if (OFFLINE) {
       sim.load();

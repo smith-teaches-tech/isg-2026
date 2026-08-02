@@ -127,15 +127,6 @@ function doPost(e) {
         setKey_('seq', (getState_().seq || 0) + 1);
         return json_({ ok: true, state: getState_() });
 
-      case 'inject': {
-        if (body.key !== PRESENTER_KEY) return json_({ ok: false, error: 'key' });
-        var r2 = (body.rows || []).map(function (r) {
-          return [r.ts, r.activity, r.slot || 'a', r.deviceId, r.name || '', r.payload];
-        });
-        if (r2.length) sh.getRange(sh.getLastRow() + 1, 1, r2.length, 6).setValues(r2);
-        return json_({ ok: true, n: r2.length });
-      }
-
       case 'clear': {
         if (body.key !== PRESENTER_KEY) return json_({ ok: false, error: 'key' });
         var vals = sh.getDataRange().getValues();

@@ -9,7 +9,9 @@ window.ISG_CONFIG = {
   // account against the responses Sheet in ISG Learns Presentations.
   //
   // Set this back to "PASTE_..." (or flip forceOffline) to return the
-  // whole site to OFFLINE MODE, which is also the dead-wifi fallback.
+  // whole site to OFFLINE MODE. That is a BUILD mode, not a plan for
+  // the day — Michael's call is that if an interaction doesn't work in
+  // the room, he asks the question out loud instead. No fake data.
   //
   // Re-deploying after editing Code.gs: Deploy > Manage deployments >
   // edit > Version: New version. The /exec URL does not change, so this
