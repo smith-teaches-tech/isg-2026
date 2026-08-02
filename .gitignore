@@ -4,3 +4,6 @@ Thumbs.db
 node_modules/
 # raw/unredacted source material — never commit
 _source/
+
+# Sandbox can't delete files; things moved here are for Michael to bin.
+_to_delete/

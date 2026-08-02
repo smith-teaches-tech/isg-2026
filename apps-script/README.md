@@ -3,21 +3,51 @@
 Fifteen minutes, once. After this you never touch it again — the schema is
 generic, so new activities need no changes here.
 
-## 1. Make the Sheet
+## 0. The Sheet already exists
 
-1. New Google Sheet. Name it `ISG Learns 2026 — responses`.
-2. **Extensions ▸ Apps Script**.
-3. Delete whatever's in `Code.gs`, paste in this folder's `Code.gs`.
-4. Set `ROOM` and `PRESENTER_KEY` at the top to match `config.js`.
-5. Save.
+**<https://docs.google.com/spreadsheets/d/1yUobrvzhAh-LKi4hi_9r6LyljTBGqvcSlRld2zJla6k/edit>**
+
+`ISG Learns 2026 — responses`, in the **ISG Learns Presentations** folder on the
+ISG account (`smith.m.04@isg.edu.sa`), next to the Aug 2026 notes doc. The
+`responses` and `control` tabs create themselves on first run — don't add them
+by hand.
+
+## 1. Attach the script
+
+1. Open the Sheet ▸ **Extensions ▸ Apps Script**.
+2. Delete whatever's in `Code.gs`, paste in this folder's `Code.gs`
+   (`~/Documents/isg-2026/apps-script/Code.gs`).
+3. `ROOM` and `PRESENTER_KEY` at the top already match `config.js`
+   (`isg26` / `backstage`). If you change one, change both.
+4. Save.
 
 ## 2. Deploy it
 
 1. **Deploy ▸ New deployment ▸** gear icon **▸ Web app**.
 2. Description: `v1`
 3. Execute as: **Me**
-4. Who has access: **Anyone** ← must be "Anyone", not "Anyone with Google account".
-   Teachers on personal phones won't be signed in.
+4. Who has access: **Anyone** ← must be "Anyone". Not "Anyone with Google
+   account", and **not "Anyone within International Schools Group"**. Teachers
+   will be on personal phones, not signed into an ISG account.
+
+   ### ⚠️ The ISG-account risk — check this first
+
+   This is deployed from a Workspace account, and many Workspace domains
+   **remove the "Anyone" option entirely** from that dropdown. If the most open
+   choice you're offered is *"Anyone within International Schools Group"*, stop:
+   the endpoint will work on your laptop and silently fail on every personal
+   phone in the room — the worst possible way to find out.
+
+   If that happens, in order of preference:
+
+   1. **Deploy the same script from a personal Gmail account.** Make a copy of
+      the Sheet there (File ▸ Make a copy), attach `Code.gs`, deploy. Nothing
+      sensitive is stored — anonymous answers and optional first names.
+   2. Ask ISG IT to allow web-app publishing for your account. Slow, but it's
+      a real setting they can flip.
+   3. Run the session in **offline mode**, which is already built and working.
+      You lose real audience devices; the fallback data still drives every
+      display. This is the floor, not the plan.
 5. **Deploy**, authorise, copy the URL ending in `/exec`.
 6. Paste it into `config.js` as `endpoint`.
 
