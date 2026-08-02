@@ -196,14 +196,33 @@ function safetyFit(w) {
   clearTimeout(fitTimer);
   fitTimer = setTimeout(() => {
     if (!w.isConnected) return;
-    let s = parseFloat(w.style.getPropertyValue('--i1-scale')) || 1;
-    let guard = 0;
+
+    const over = () => w.scrollWidth > w.clientWidth + 2;
+    const set  = (k, v) => { w.style.setProperty(k, v); void w.offsetWidth; };
+
     w.classList.add('i1-nofx');
-    while (w.scrollWidth > w.clientWidth + 2 && s > 0.45 && guard++ < 14) {
-      s = Math.round((s - 0.04) * 100) / 100;
-      w.style.setProperty('--i1-scale', s);
-      void w.offsetWidth;                       // force reflow before re-reading
+
+    /* ADD A COLUMN BEFORE SHRINKING THE TYPE. This order matters more
+       than it looks. On a 1280x720 projector, 26 answers on the three
+       columns fit() picked were being crushed to 9px — unreadable from
+       the third row — when five columns would have held them at normal
+       size. Reflowing is free; shrinking costs legibility, so it is
+       the last resort.
+
+       Columns are capped at whatever leaves ~220px each: past that the
+       lines get so short the text turns to confetti. */
+    const maxCols = Math.max(2, Math.min(6, Math.floor(w.clientWidth / 220)));
+    let cols  = Number(w.style.getPropertyValue('--i1-cols')) || 2;
+    let scale = parseFloat(w.style.getPropertyValue('--i1-scale')) || 1;
+
+    let guard = 0;
+    while (over() && cols < maxCols && guard++ < 8) set('--i1-cols', ++cols);
+    guard = 0;
+    while (over() && scale > 0.45 && guard++ < 14) {
+      scale = Math.round((scale - 0.04) * 100) / 100;
+      set('--i1-scale', scale);
     }
+
     w.classList.remove('i1-nofx');
   }, 1000);
 }

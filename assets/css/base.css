@@ -186,8 +186,8 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
 }
 .joinbadge__qr {
   display: block;
-  width: 220px;
-  height: 220px;
+  width: clamp(130px, 11.5vw, 240px);
+  height: clamp(130px, 11.5vw, 240px);
   transition: width .6s var(--ease), height .6s var(--ease);
 }
 .joinbadge__url  { font-size: var(--t-base); color: var(--ink); margin-top: var(--s-2); }
@@ -239,3 +239,52 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
    it would print the same address twice. */
 .urlmark { transition: opacity .4s var(--ease); }
 .screen-root.badge-bottom .urlmark { opacity: 0; }
+
+/* --- on-screen controls (big screen only) -------------------
+   The escape hatch for when you're standing at the laptop. Hidden
+   until the mouse moves and gone again 2.5s later, like video player
+   controls — the room must never see it on the projector, and the
+   clicker never summons it because a clicker sends keys, not mouse
+   movement. */
+.ctrlbar {
+  position: fixed;
+  left: 50%;
+  bottom: var(--s-5);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: rgba(22, 27, 34, .94);
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  box-shadow: var(--shadow);
+  z-index: 80;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s var(--ease);
+}
+.ctrlbar[data-show="1"] { opacity: 1; pointer-events: auto; }
+.ctrlbar button {
+  min-width: 2.6rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--bg-input);
+  color: var(--ink);
+  font-size: var(--t-sm);
+  line-height: 1;
+  cursor: pointer;
+}
+.ctrlbar button:hover { border-color: var(--accent); }
+.ctrlbar button:active { transform: scale(.95); }
+.ctrlbar__reset { color: var(--accent-hot) !important; }
+.ctrlbar__where {
+  padding: 0 var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--ink-dim);
+  white-space: nowrap;
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

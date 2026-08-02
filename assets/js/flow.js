@@ -69,3 +69,23 @@ export function back(session, state, steps = 0) {
     phase: prevSeg && prevSeg.activity ? 'reveal' : 'idle'
   };
 }
+
+/* ---------- chapter skip ------------------------------------
+   For the on-screen buttons, not the clicker. Deliberately NOT the
+   same as back(): back() walks beat by beat, this jumps whole
+   segments.
+
+   First press goes to the START OF THE CURRENT segment — which is
+   almost always what you want when something has gone wrong and you
+   need to run that bit again. Press it a second time (you're already
+   at the start) and it goes to the previous segment. Same behaviour
+   as skip-back on any music player. */
+export function sectionBack(session, state) {
+  const atStart = state.step === 0 && state.phase === 'idle';
+  const n = atStart ? prevN(session, state.segment) : state.segment;
+  return { segment: n, step: 0, phase: 'idle' };
+}
+
+export function sectionForward(session, state) {
+  return { segment: nextN(session, state.segment), step: 0, phase: 'idle' };
+}

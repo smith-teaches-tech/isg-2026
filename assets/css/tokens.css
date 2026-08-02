@@ -60,11 +60,20 @@
   --ease:   cubic-bezier(.4,0,.2,1);
 }
 
-/* The big screen is far away. Everything scales up in one place. */
+/* The big screen is far away. Everything scales up in one place.
+
+   Sized in vw, not rem, because the projector's resolution is still
+   unknown — these were tuned at 1920 wide and a fixed rem ladder
+   overflows a 1280 projector. The clamp floors stop it collapsing on
+   a laptop screen while testing; the ceilings stop it becoming absurd
+   on something very wide. At 1920 each value lands on the number it
+   used to be hard-coded to. */
 .screen-root {
-  --t-base: 1.4rem;
-  --t-lg:   1.9rem;
-  --t-xl:   2.6rem;
-  --t-2xl:  4rem;
-  --t-3xl:  6rem;
+  --t-xs:   clamp(0.70rem, 0.63vw, 1.00rem);
+  --t-sm:   clamp(0.80rem, 0.73vw, 1.15rem);
+  --t-base: clamp(1.00rem, 1.17vw, 1.75rem);
+  --t-lg:   clamp(1.25rem, 1.58vw, 2.40rem);
+  --t-xl:   clamp(1.60rem, 2.17vw, 3.20rem);
+  --t-2xl:  clamp(2.20rem, 3.33vw, 5.00rem);
+  --t-3xl:  clamp(3.00rem, 5.00vw, 7.50rem);
 }

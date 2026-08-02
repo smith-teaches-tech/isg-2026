@@ -17,9 +17,9 @@
      The presenter page on your phone is for out-of-band moves
      (jump to a segment, back to the start) — not required to run. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=9">
-<link rel="stylesheet" href="../assets/css/base.css?v=9">
-<script src="../config.js?v=9"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=10">
+<link rel="stylesheet" href="../assets/css/base.css?v=10">
+<script src="../config.js?v=10"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -55,10 +55,21 @@
 <div class="segmark" id="segmark"></div>
 <div id="focushint" hidden>click once on this window — the clicker needs it focused</div>
 
+<!-- Escape hatch, for when you walk to the laptop because something
+     has gone wrong. Invisible until the mouse moves. -->
+<div class="ctrlbar" id="ctrlbar" data-show="0">
+  <button data-act="secback" title="Start of this section — again for the previous one">⏮</button>
+  <button data-act="back"    title="Back one beat">‹</button>
+  <button data-act="fwd"     title="Forward one beat">›</button>
+  <button data-act="secfwd"  title="Start of the next section">⏭</button>
+  <span class="ctrlbar__where mono" id="ctrlwhere"></span>
+  <button data-act="reset" class="ctrlbar__reset" title="Back to the title card">↺</button>
+</div>
+
 <script type="module">
 import { bus, loadActivity, loadSession } from '../assets/js/bus.js';
 import { api } from '../assets/js/api.js';
-import { advance, back, segmentAt } from '../assets/js/flow.js';
+import { advance, back, sectionBack, sectionForward, segmentAt } from '../assets/js/flow.js';
 import { loadSlide, stepCount, applySteps, placeholder } from '../assets/js/slides.js';
 import { h, mount, chrome, joinBadge, setJoinSize, offlineBadge } from '../assets/js/ui.js';
 
@@ -86,6 +97,8 @@ async function draw(state) {
 
   document.getElementById('segmark').textContent =
     segment ? `${segment}/${session.segments.length} · ${phase}` : '';
+  document.getElementById('ctrlwhere').textContent =
+    seg ? `${segment}/${session.segments.length} · ${seg.title}` : 'title card';
 
   /* Big while the room is arriving; small and out of the way while an
      interaction is open, so a latecomer can scan at the only moment
@@ -211,6 +224,42 @@ addEventListener('keydown', e => {
 
   const next = (fwd ? advance : back)(session, bus.state, steps);
   bus.setState(next).catch(err => console.warn('[isg] could not advance', err));
+});
+
+/* ---------- on-screen controls ------------------------------
+   Only ever seen by whoever is standing at the laptop. Shown on mouse
+   movement, hidden 2.5s after it stops — a clicker sends keys, not
+   mouse events, so running the session normally never summons it.
+
+   Every button stops the click from bubbling. Without that, the
+   click-anywhere-to-advance handler on window would fire too and every
+   press would do its own job AND jump a beat forward. */
+
+const ctrlbar = document.getElementById('ctrlbar');
+let hideBar;
+
+addEventListener('mousemove', () => {
+  ctrlbar.dataset.show = '1';
+  clearTimeout(hideBar);
+  hideBar = setTimeout(() => { ctrlbar.dataset.show = '0'; }, 2500);
+});
+
+ctrlbar.addEventListener('click', async e => {
+  e.stopPropagation();
+  const act = e.target.closest('button')?.dataset.act;
+  if (!act) return;
+
+  if (act === 'fwd' || act === 'back') {
+    return dispatchEvent(new KeyboardEvent('keydown',
+      { key: act === 'fwd' ? 'ArrowRight' : 'ArrowLeft' }));
+  }
+  if (act === 'reset') {
+    if (!confirm('Back to the title card?')) return;
+    return bus.setState({ segment: 0, step: 0, phase: 'idle' })
+      .catch(err => console.warn('[isg] reset failed', err));
+  }
+  const next = (act === 'secback' ? sectionBack : sectionForward)(session, bus.state);
+  bus.setState(next).catch(err => console.warn('[isg] section jump failed', err));
 });
 
 /* ---------- focus ------------------------------------------
