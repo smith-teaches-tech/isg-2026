@@ -5,10 +5,16 @@
 
 window.ISG_CONFIG = {
 
-  // Paste the Apps Script Web App /exec URL here after deploying.
-  // While this is left as-is, the whole site runs in OFFLINE MODE:
-  // nothing is sent anywhere and fallback data is used. Good for building.
-  endpoint: "PASTE_APPS_SCRIPT_EXEC_URL_HERE",
+  // Apps Script Web App /exec URL. Deployed 2026-08-02 from the ISG
+  // account against the responses Sheet in ISG Learns Presentations.
+  //
+  // Set this back to "PASTE_..." (or flip forceOffline) to return the
+  // whole site to OFFLINE MODE, which is also the dead-wifi fallback.
+  //
+  // Re-deploying after editing Code.gs: Deploy > Manage deployments >
+  // edit > Version: New version. The /exec URL does not change, so this
+  // line stays correct.
+  endpoint: "https://script.google.com/macros/s/AKfycbwDvWwstt9dAXa5myUNxqLXmEWdQEF2oRcwaQ5bshhUlPxHCGsY39Bp-ihoyUuIfIw/exec",
 
   // Room code. The Apps Script rejects any write that doesn't match.
   // Change it the morning of the session; costs nothing, stops drive-by spam.
