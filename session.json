@@ -1,0 +1,45 @@
+{
+  "title": "Taking Back At-Home Writing",
+  "subtitle": "How to Let Students Write Outside Class Again",
+  "event": "ISG Learns — August 2026",
+  "targetMinutes": 75,
+
+  "_comment": "SINGLE SOURCE OF TRUTH. The presenter page, the big screen, and the slide navigation all read this file. Change the running order here and everything follows. `activity` links a segment to a folder in /activities/.",
+
+  "segments": [
+    { "n": 1,  "min": 1,   "title": "Scan-in + gut-check gauge",              "slide": "01-scan-in",       "activity": "i0-gauge" },
+    { "n": 2,  "min": 2.5, "title": "How do you protect from AI slop?",       "slide": "02-opening",       "activity": "i1-slop-wall" },
+    { "n": 3,  "min": 4,   "title": "Autotyper demo + Human or bot?",         "slide": "03-autotyper",     "activity": "i2-human-or-bot" },
+    { "n": 4,  "min": 3,   "title": "What happens to student brains",         "slide": "04-brains",        "activity": null },
+    { "n": 5,  "min": 4,   "title": "More or less writing?",                  "slide": "05-how-much",      "activity": "i3-how-much" },
+    { "n": 6,  "min": 2,   "title": "THE DILEMMA",                            "slide": "06-dilemma",       "activity": null },
+    { "n": 7,  "min": 2,   "title": "The solution, previewed",                "slide": "07-preview",       "activity": null },
+    { "n": 8,  "min": 4,   "title": "Turnitin study — guess the flag rate",   "slide": "08-turnitin",      "activity": "i4-flag-rate" },
+    { "n": 9,  "min": 2,   "title": "IB Cohort 14",                           "slide": "09-cohort14",      "activity": null },
+    { "n": 10, "min": 2,   "title": "IB amnesty",                             "slide": "10-ib-amnesty",    "activity": null },
+    { "n": 11, "min": 3,   "title": "AP Language amnesty",                    "slide": "11-ap-amnesty",    "activity": null },
+    { "n": 12, "min": 6,   "title": "The Inception Effect",                   "slide": "12-inception",     "activity": "i5-inception" },
+    { "n": 13, "min": 2,   "title": "The steroids analogy",                   "slide": "13-steroids",      "activity": null },
+    { "n": 14, "min": 5,   "title": "Counter-argument: students need AI",     "slide": "14-counter",       "activity": null },
+    { "n": 15, "min": 4,   "title": "Where's the line?",                      "slide": "15-the-line",      "activity": "i6-the-line" },
+    { "n": 16, "min": 5,   "title": "So what do we do — AP Lang S2",          "slide": "16-method",        "activity": null },
+    { "n": 17, "min": 3,   "title": "Why it worked: plausible deniability",   "slide": "17-why",           "activity": null },
+    { "n": 18, "min": 2,   "title": "Build the corpus",                       "slide": "18-corpus",        "activity": null },
+    { "n": 19, "min": 6,   "title": "What if a paper comes back flagged?",    "slide": "19-papertrail",    "activity": "i7-papertrail" },
+    { "n": 20, "min": 3,   "title": "Oral Defense + the reversal",            "slide": "20-oral-defense",  "activity": null },
+    { "n": 21, "min": 2,   "title": "Close: evidence changes behavior",       "slide": "21-close",         "activity": null },
+    { "n": 22, "min": 5,   "title": "What will you try first?",               "slide": "22-commit",        "activity": "i8-commit" }
+  ],
+
+  "activities": {
+    "i0-gauge":        { "label": "I-0 · Gut-check gauge",     "reveal": "hold",  "built": true  },
+    "i1-slop-wall":    { "label": "I-1 · Anti-slop wall",      "reveal": "live",  "built": false },
+    "i2-human-or-bot": { "label": "I-2 · Human or bot?",       "reveal": "hold",  "built": false },
+    "i3-how-much":     { "label": "I-3 · How much writing?",   "reveal": "hold",  "built": false },
+    "i4-flag-rate":    { "label": "I-4 · Guess the flag rate", "reveal": "hold",  "built": false },
+    "i5-inception":    { "label": "I-5 · Inception Effect",    "reveal": "hold",  "built": false },
+    "i6-the-line":     { "label": "I-6 · Where's the line?",   "reveal": "hold",  "built": false },
+    "i7-papertrail":   { "label": "I-7 · Papertrail",          "reveal": "live",  "built": false },
+    "i8-commit":       { "label": "I-8 · Commit + gallery",    "reveal": "live",  "built": false }
+  }
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISG Learns — Screen</title>
+
+<!-- The projector. Open fullscreen (F11 / ⌃⌘F) and leave it.
+     Follows the presenter control page; never touched during the session. -->
+
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1">
+<link rel="stylesheet" href="../assets/css/base.css?v=1">
+<script src="../config.js?v=1"></script>
+<style>
+  body { overflow: hidden; }
+  .app-body { min-height: 100dvh; }
+  .conn-warn {
+    position: fixed; left: var(--s-5); bottom: var(--s-5);
+    font-family: var(--font-mono); font-size: var(--t-sm);
+    color: var(--accent-hot); opacity: .85;
+  }
+</style>
+</head>
+<body class="screen-root">
+
+<div class="app">
+  <main class="app-body" id="stage">
+    <div class="state-msg"><div class="pill">screen ready</div></div>
+  </main>
+</div>
+
+<script type="module">
+import { bus, loadActivity, loadSession } from '../assets/js/bus.js';
+import { api } from '../assets/js/api.js';
+import { h, mount, chrome, offlineBadge } from '../assets/js/ui.js';
+
+const stage = document.getElementById('stage');
+chrome(document.body);
+if (api.OFFLINE) offlineBadge();
+
+const session = await loadSession('../');
+let currentId = undefined, mod = null;
+
+bus.subscribe(async ({ state }) => {
+  const { activity, phase } = state;
+
+  if (!activity) {
+    mount(stage, h('div', { class: 'state-msg fade-in' },
+      h('h1', {}, session.title),
+      h('p', { class: 'muted' }, session.subtitle),
+      h('div', { class: 'pill' }, 'scan the code to join')));
+    currentId = null;
+    return;
+  }
+
+  if (activity !== currentId) {
+    currentId = activity;
+    mod = null;
+    try { mod = await loadActivity(activity, '../'); }
+    catch {
+      mount(stage, h('div', { class: 'state-msg' }, h('p', { class: 'faint mono' }, activity + ' — not built yet')));
+      return;
+    }
+  }
+  // Runs on every tick that brought news, so live walls trickle in.
+  if (mod) draw(phase);
+});
+
+let lastSig = '';
+function draw(phase) {
+  const rows   = bus.rowsFor(currentId);
+  const unique = bus.uniqueFor(currentId);
+
+  // Cheap guard against redrawing an unchanged screen every 1.5s.
+  const sig = currentId + '|' + phase + '|' + rows.length;
+  if (sig === lastSig) return;
+  lastSig = sig;
+
+  const root = h('div', { style: 'width:100%' });
+  mount(stage, root);
+  mod.screen.render({ root, phase, rows, unique, total: unique.length, session, bus });
+}
+
+bus.start();
+
+setInterval(() => {
+  document.querySelector('.conn-warn')?.remove();
+  if (!bus.connected && !api.OFFLINE) {
+    document.body.append(h('div', { class: 'conn-warn' }, '⚠ lost the sheet — using what we have'));
+  }
+}, 3000);
+</script>
+</body>
+</html>

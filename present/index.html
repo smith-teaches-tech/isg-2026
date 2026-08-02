@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISG Learns — Presenter</title>
+
+<!-- Second device, in your hand. Requires ?key=<presenterKey>.
+     Drives the big screen and every phone in the room. -->
+
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1">
+<link rel="stylesheet" href="../assets/css/base.css?v=1">
+<script src="../config.js?v=1"></script>
+<style>
+  .app-body { max-width: 560px; }
+  .seg {
+    display: grid; grid-template-columns: 2.2rem 1fr auto;
+    gap: var(--s-3); align-items: center;
+    padding: var(--s-3); border-bottom: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .seg:last-child { border-bottom: 0; }
+  .seg:hover { background: var(--bg-input); }
+  .seg[data-live="1"] { background: rgba(76,154,255,.12); box-shadow: inset 3px 0 0 var(--accent); }
+  .seg .n  { font-family: var(--font-mono); color: var(--ink-faint); font-size: var(--t-sm); }
+  .seg .t  { font-size: var(--t-sm); }
+  .seg .a  { font-size: var(--t-xs); color: var(--accent); font-family: var(--font-mono); }
+  .seg[data-built="0"] .a { color: var(--ink-faint); }
+  .phases  { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
+  .phases .btn[data-on="1"] { background: var(--accent); border-color: var(--accent); color: #05121f; }
+  .bar-row { display: flex; gap: var(--s-2); }
+  .live-count { font-family: var(--font-mono); color: var(--accent-cool); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <main class="app-body">
+    <div id="gate" class="state-msg" hidden>
+      <p>Presenter page.</p>
+      <p class="faint mono">add ?key=… to the URL</p>
+    </div>
+
+    <div id="panel" hidden>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-3)">
+          <strong id="now">— nothing running —</strong>
+          <span class="live-count" id="count">0</span>
+        </div>
+        <div class="phases">
+          <button class="btn btn--sm" data-phase="idle">idle</button>
+          <button class="btn btn--sm" data-phase="input">open</button>
+          <button class="btn btn--sm" data-phase="locked">lock</button>
+          <button class="btn btn--sm" data-phase="reveal">reveal</button>
+        </div>
+        <div class="bar-row" style="margin-top:var(--s-3)">
+          <button class="btn btn--sm btn--ghost" id="fallback">inject fallback</button>
+          <button class="btn btn--sm btn--ghost" id="clear">clear responses</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0" id="segs"></div>
+
+      <p class="faint mono center" style="font-size:var(--t-xs)" id="mode"></p>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { bus, loadSession, loadFallback } from '../assets/js/bus.js';
+import { api } from '../assets/js/api.js';
+import { h, mount } from '../assets/js/ui.js';
+
+const cfg = window.ISG_CONFIG;
+const key = new URLSearchParams(location.search).get('key');
+
+if (key !== cfg.presenterKey) {
+  document.getElementById('gate').hidden = false;
+} else {
+  document.getElementById('panel').hidden = false;
+  init();
+}
+
+async function init() {
+  const session = await loadSession('../');
+  const segs = document.getElementById('segs');
+  document.getElementById('mode').textContent =
+    api.OFFLINE ? 'OFFLINE MODE — nothing is being saved' : 'live · room ' + cfg.room;
+
+  // Run of show, straight from session.json. Tap a row to make it current.
+  mount(segs, session.segments.map(s => {
+    const meta = s.activity ? session.activities[s.activity] : null;
+    return h('div', {
+      class: 'seg',
+      'data-id': s.activity || '',
+      'data-built': meta?.built ? '1' : '0',
+      onclick: () => go(s.activity)
+    },
+      h('span', { class: 'n' }, s.n),
+      h('span', { class: 't' }, s.title),
+      h('span', { class: 'a' }, s.activity ? (meta.built ? meta.label.split(' · ')[0] : '—') : '')
+    );
+  }));
+
+  async function go(activity) {
+    if (!activity) return;
+    await bus.setState({ activity, phase: 'input' });
+  }
+
+  document.querySelectorAll('[data-phase]').forEach(btn => {
+    btn.onclick = () => bus.setState({ activity: bus.state.activity, phase: btn.dataset.phase });
+  });
+
+  document.getElementById('fallback').onclick = async () => {
+    const id = bus.state.activity;
+    if (!id) return;
+    const rows = await loadFallback(id, '../');
+    if (!rows.length) return alert('No fallback file for ' + id);
+    await api.injectFallback(id, rows);
+  };
+
+  document.getElementById('clear').onclick = async () => {
+    const id = bus.state.activity;
+    if (id && confirm('Clear all responses for ' + id + '?')) await api.clear(id);
+  };
+
+  bus.subscribe(({ state }) => {
+    const meta = state.activity ? session.activities[state.activity] : null;
+    document.getElementById('now').textContent = meta ? meta.label : '— nothing running —';
+    document.getElementById('count').textContent =
+      state.activity ? bus.uniqueFor(state.activity).length : 0;
+    document.querySelectorAll('.seg').forEach(el =>
+      el.dataset.live = el.dataset.id === state.activity ? '1' : '0');
+    document.querySelectorAll('[data-phase]').forEach(b =>
+      b.dataset.on = b.dataset.phase === state.phase ? '1' : '0');
+  });
+
+  bus.start();
+}
+</script>
+</body>
+</html>

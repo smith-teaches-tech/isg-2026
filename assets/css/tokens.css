@@ -1,0 +1,70 @@
+/* ============================================================
+   Design tokens. Change a value here, the whole session changes.
+   Every activity must use these — no hard-coded colours anywhere.
+   ============================================================ */
+
+:root {
+  /* --- surface --------------------------------------------- */
+  --bg:            #0d1117;
+  --bg-raised:     #161b22;
+  --bg-input:      #1c232c;
+  --line:          #2b3441;
+  --line-strong:   #3d4855;
+
+  /* --- text ------------------------------------------------ */
+  --ink:           #e8edf3;
+  --ink-dim:       #9aa7b6;
+  --ink-faint:     #5f6c7b;
+
+  /* --- accents --------------------------------------------- */
+  --accent:        #4c9aff;   /* primary / interactive        */
+  --accent-warm:   #ffab4c;   /* highlight, "the finding"     */
+  --accent-hot:    #ff5c5c;   /* flagged / AI / warning       */
+  --accent-cool:   #35d6a4;   /* verified / human / clean     */
+
+  /* categorical, for charts with >1 series (I-3, I-6 heatmap) */
+  --cat-1: #4c9aff;
+  --cat-2: #ffab4c;
+  --cat-3: #35d6a4;
+  --cat-4: #c98bff;
+  --cat-5: #ff5c5c;
+
+  /* --- type ------------------------------------------------ */
+  --font-ui:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-read:  Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-mono:  ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Phone-first sizes. The screen/ page overrides these upward. */
+  --t-xs:   0.75rem;
+  --t-sm:   0.875rem;
+  --t-base: 1rem;
+  --t-lg:   1.25rem;
+  --t-xl:   1.6rem;
+  --t-2xl:  2.2rem;
+  --t-3xl:  3rem;
+
+  /* --- space ----------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+
+  --radius:    12px;
+  --radius-sm: 8px;
+
+  --shadow: 0 8px 30px rgba(0,0,0,.45);
+  --ease:   cubic-bezier(.4,0,.2,1);
+}
+
+/* The big screen is far away. Everything scales up in one place. */
+.screen-root {
+  --t-base: 1.4rem;
+  --t-lg:   1.9rem;
+  --t-xl:   2.6rem;
+  --t-2xl:  4rem;
+  --t-3xl:  6rem;
+}

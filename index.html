@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>ISG Learns — Taking Back At-Home Writing</title>
+
+<!-- THE audience page. One scan, one tab, never navigates away.
+     The presenter decides what this shows; it follows along. -->
+
+<link rel="stylesheet" href="assets/css/tokens.css?v=1">
+<link rel="stylesheet" href="assets/css/base.css?v=1">
+<script src="config.js?v=1"></script>
+</head>
+<body>
+
+<div class="app">
+  <main class="app-body" id="stage">
+    <div class="state-msg">
+      <div class="pill">connecting</div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { bus, loadActivity, loadSession } from './assets/js/bus.js';
+import { api } from './assets/js/api.js';
+import { device } from './assets/js/device.js';
+import { h, mount, chrome, offlineBadge } from './assets/js/ui.js';
+
+const stage = document.getElementById('stage');
+chrome(document.body);
+if (api.OFFLINE) offlineBadge();
+
+const session = await loadSession();
+let currentId = undefined;
+let currentPhase = undefined;
+let mod = null;
+
+bus.subscribe(async ({ state }) => {
+  const { activity, phase } = state;
+
+  // Nothing running yet — hold the room on a friendly waiting card.
+  if (!activity) {
+    if (currentId !== null) { currentId = null; showWaiting(); }
+    return;
+  }
+
+  const activityChanged = activity !== currentId;
+  if (activityChanged) {
+    currentId = activity;
+    mod = null;
+    mount(stage, h('div', { class: 'state-msg' }, h('div', { class: 'pill' }, 'loading')));
+    try {
+      mod = await loadActivity(activity);
+    } catch (err) {
+      console.error(err);
+      mount(stage, h('div', { class: 'state-msg' },
+        h('p', {}, 'This activity is still being built.'),
+        h('p', { class: 'faint mono' }, activity)));
+      return;
+    }
+  }
+
+  if (!mod) return;
+  if (!activityChanged && phase === currentPhase) return;
+  currentPhase = phase;
+
+  const root = h('div', { class: 'fade-in' });
+  mount(stage, root);
+
+  mod.phone.render({
+    root,
+    phase,
+    session,
+    device,
+    mine: (slot = 'a') => device.answer(activity, slot),
+    submit: (payload, slot = 'a') => api.submit(activity, payload, slot)
+  });
+});
+
+function showWaiting() {
+  mount(stage, h('div', { class: 'state-msg fade-in' },
+    h('h2', {}, session.title),
+    h('p', { class: 'muted' }, "You're in. Keep this tab open — everything happens here."),
+    h('div', { class: 'pill' }, 'waiting for the presenter'),
+    nameField()
+  ));
+}
+
+// Optional name, collected once while people wait. Anonymous by default;
+// it exists only so a good answer can be called on to elaborate.
+function nameField() {
+  const input = h('input', {
+    class: 'input', type: 'text', placeholder: 'optional', value: device.name,
+    onchange: e => { device.name = e.target.value; }
+  });
+  return h('div', { class: 'card', style: 'width:100%;max-width:22rem;text-align:left' },
+    h('div', { class: 'field', style: 'margin:0' },
+      h('label', {}, 'Name (optional — so I can call on you)'),
+      input));
+}
+
+bus.start();
+</script>
+</body>
+</html>
