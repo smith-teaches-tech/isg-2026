@@ -133,7 +133,7 @@ export default {
       injectCSS();
 
       if (phase === 'input') {
-        stop();
+        stop();          // a genuine restart: the vote is open again
         return mount(root, h('div', { class: 'center' },
           h('h1', {}, QUESTION),
           h('div', { class: 'big mono', style: 'margin:var(--s-6) 0' }, total),
@@ -158,8 +158,12 @@ export default {
         return play(box);
       }
 
-      /* ---- REVEAL ---- */
-      stop();
+      /* ---- REVEAL ----
+         Deliberately NOT stop()ing. Over-clicking past a 30-second
+         animation is the easiest mistake on this slide, and pressing
+         back used to restart it from a blank page — another 30
+         seconds, with no way to skip. Keeping the run alive means
+         going back re-attaches the document exactly where it was. */
 
       const counts = tally(unique, 'value');
       const yes = counts.get('yes') || 0;
@@ -303,6 +307,7 @@ function play(box) {
   };
 
   const finish = () => {
+    state.done = true;
     box.status.textContent = 'Done';
     box.btn.textContent = 'Type for Me';
     box.caret.remove();

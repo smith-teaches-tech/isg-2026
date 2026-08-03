@@ -13,6 +13,12 @@
 
 import { h, mount, countUp } from '../../assets/js/ui.js';
 
+/* The reveal re-renders on any resize — and the screen page forces
+   exactly that when the projector re-negotiates or fullscreen is
+   toggled. Without this the room's average visibly counted up from
+   zero again, mid-sentence, while Michael was saying the number. */
+let counted = null;
+
 const QUESTION = 'What % of the at-home writing you receive do you think is AI-assisted?';
 
 export default {
@@ -70,6 +76,7 @@ export default {
       const values = unique.map(r => Number(r.payload?.value)).filter(n => !isNaN(n));
 
       if (phase === 'idle') {
+        counted = null;
         return mount(root, h('div', { class: 'center' },
           h('h1', {}, QUESTION),
           h('p', { class: 'muted' }, 'scan the code to answer')));
@@ -114,7 +121,8 @@ export default {
           'This room says ', avgEl, ' of at-home writing is AI-assisted.')
       ));
 
-      countUp(avgEl, avg, 1100, '%');
+      if (counted === avg) avgEl.textContent = avg + '%';
+      else { counted = avg; countUp(avgEl, avg, 1100, '%'); }
     }
   }
 };

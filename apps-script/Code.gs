@@ -33,6 +33,14 @@ function sheet_(name, headers) {
 function responses_() { return sheet_('responses', ['ts','activity','slot','deviceId','name','payload']); }
 function control_()   { return sheet_('control',   ['key','value']); }
 
+/* `name` is the only free-text field written to a cell unquoted, so a
+   teacher typing "=)" would store a FORMULA and the wall would show
+   #NAME? as the attribution. payload is always JSON starting with { */
+function safeName_(v) {
+  v = String(v == null ? '' : v);
+  return /^[=+\-@]/.test(v) ? "'" + v : v;
+}
+
 function json_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
@@ -67,11 +75,21 @@ function doGet(e) {
 
   var sh = responses_();
   var last = sh.getLastRow();          // includes header
+  var rows = Math.max(0, last - 1);    // data rows, excluding the header
   var cursor = Math.max(0, Number(p.cursor) || 0);
   var out = [];
 
-  if (last - 1 > cursor) {
-    var vals = sh.getRange(cursor + 2, 1, last - 1 - cursor, 6).getValues();
+  /* THE SHEET CAN SHRINK. `clear` deletes rows, so a client that was
+     already polling holds a cursor above the new row count and would
+     never satisfy the test below again — it goes permanently blind
+     while still displaying the rows it cached. That is exactly what
+     happens when you clear your own test answers with the projector
+     already showing the wall. Reset such a client to the top and let
+     it rebuild from scratch. */
+  if (cursor > rows) cursor = 0;
+
+  if (rows > cursor) {
+    var vals = sh.getRange(cursor + 2, 1, rows - cursor, 6).getValues();
     for (var i = 0; i < vals.length; i++) {
       out.push({
         ts: vals[i][0], activity: vals[i][1], slot: vals[i][2],
@@ -80,7 +98,7 @@ function doGet(e) {
     }
   }
 
-  return json_({ ok: true, rows: out, cursor: Math.max(cursor, last - 1), state: getState_() });
+  return json_({ ok: true, rows: out, cursor: rows, state: getState_() });
 }
 
 // ---------- write --------------------------------------------
@@ -105,13 +123,13 @@ function doPost(e) {
 
       case 'submit':
         sh.appendRow([body.ts, body.activity, body.slot || 'a',
-                      body.deviceId, body.name || '', body.payload]);
+                      body.deviceId, safeName_(body.name), body.payload]);
         return json_({ ok: true });
 
       /* Client retry queue — several held-back votes at once. */
       case 'submitBatch': {
         var rows = (body.rows || []).map(function (r) {
-          return [r.ts, r.activity, r.slot || 'a', r.deviceId, r.name || '', r.payload];
+          return [r.ts, r.activity, r.slot || 'a', r.deviceId, safeName_(r.name), r.payload];
         });
         if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, 6).setValues(rows);
         return json_({ ok: true, n: rows.length });

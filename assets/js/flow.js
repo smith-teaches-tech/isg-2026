@@ -47,7 +47,14 @@ export function advance(session, state, steps = 0) {
   if (phase === 'input')  return { segment, step, phase: 'locked' };
   if (phase === 'locked') return { segment, step, phase: 'reveal' };
 
-  return { segment: nextN(session, segment), step: 0, phase: 'idle' };
+  /* At the very end, stay put. nextN() clamps to the last segment, so
+     one press past the closing reveal was restarting segment 22 from
+     its first beat — wiping the commitment gallery off the projector
+     and dropping all 30 phones back to "waiting for the presenter",
+     on the final beat of the talk. */
+  const next = nextN(session, segment);
+  if (next === segment) return state;
+  return { segment: next, step: 0, phase: 'idle' };
 }
 
 export function back(session, state, steps = 0) {

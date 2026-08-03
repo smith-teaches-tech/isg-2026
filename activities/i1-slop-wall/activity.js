@@ -127,7 +127,7 @@ export default {
 
   /* ---------- SCREEN --------------------------------------- */
   screen: {
-    render({ root, phase, rows }) {
+    render({ root, phase, rows: allRows, unique }) {
 
       injectCSS();
 
@@ -137,6 +137,13 @@ export default {
           h('h1', {}, QUESTION),
           h('p', { class: 'muted' }, 'answers appear here as you send them')));
       }
+
+      /* One row per device. It used to render `rows`, but api.js
+         re-queues a submit whenever the response is lost — and if the
+         write actually landed, the retry writes it AGAIN. The same
+         teacher's answer then appeared as two identical tiles with the
+         count inflated. Every other activity already deduped. */
+      const rows = unique;
 
       /* Cleared, or we came back round. Start the wall over. */
       if (rows.length < drawn) resetWall();
@@ -171,8 +178,13 @@ export default {
       wallEl.style.setProperty('--i1-scale', f.scale);
       safetyFit(wallEl);
 
-      if (!rows.length) wallEl.append(h('div', { class: 'i1-empty faint' }, 'waiting for the first one…'));
-      else wallEl.querySelector('.i1-empty')?.remove();
+      /* Guarded both ways: this runs on every phase change and every
+         resize, and it used to append a fresh placeholder each time
+         while only ever removing one — so an empty wall that had been
+         over-clicked showed a stack of "waiting for the first one…". */
+      const empty = wallEl.querySelector('.i1-empty');
+      if (!rows.length && !empty) wallEl.append(h('div', { class: 'i1-empty faint' }, 'waiting for the first one…'));
+      if (rows.length && empty) empty.remove();
     }
   }
 };

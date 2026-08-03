@@ -122,7 +122,7 @@ export const api = {
       return await post({ action: 'submit', ...row, payload: JSON.stringify(payload) });
     } catch (err) {
       /* Queue and retry once on the next poll rather than losing the vote. */
-      retryQueue.push(row);
+      queueRetry(row);
       console.warn('[isg] submit failed, queued', err);
       return { ok: false, queued: true };
     }
@@ -179,13 +179,33 @@ export const api = {
 
 /* ---------- retry queue ------------------------------------- */
 
-const retryQueue = [];
+/* Persisted, because it was previously a plain in-memory array: a
+   teacher whose submit stalled, who then reloaded the page because
+   nothing appeared to happen, silently lost their answer — while
+   their phone still said "Answer received", because device.remember()
+   had already run. Survive the reload instead. */
+const RETRY_KEY = 'isg.retry';
+
+function loadRetries() {
+  try { return JSON.parse(localStorage.getItem(RETRY_KEY) || '[]'); } catch { return []; }
+}
+function saveRetries(q) {
+  try { localStorage.setItem(RETRY_KEY, JSON.stringify(q)); } catch {}
+}
+
+const retryQueue = OFFLINE ? [] : loadRetries();
+
+function queueRetry(row) {
+  retryQueue.push(row);
+  saveRetries(retryQueue);
+}
 
 function flushRetries() {
   if (!retryQueue.length) return;
   const batch = retryQueue.splice(0, retryQueue.length);
+  saveRetries(retryQueue);
   post({ action: 'submitBatch', rows: batch.map(r => ({ ...r, payload: JSON.stringify(r.payload) })) })
-    .catch(() => retryQueue.push(...batch));
+    .catch(() => { retryQueue.push(...batch); saveRetries(retryQueue); });
 }
 
 function safeParse(s) {

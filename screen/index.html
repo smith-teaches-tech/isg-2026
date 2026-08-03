@@ -17,9 +17,9 @@
      The presenter page on your phone is for out-of-band moves
      (jump to a segment, back to the start) — not required to run. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=15">
-<link rel="stylesheet" href="../assets/css/base.css?v=15">
-<script src="../config.js?v=15"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=16">
+<link rel="stylesheet" href="../assets/css/base.css?v=16">
+<script src="../config.js?v=16"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -76,6 +76,16 @@ import { h, mount, chrome, joinBadge, setJoinSize, offlineBadge } from '../asset
 const stage = document.getElementById('stage');
 const session = await loadSession('../');
 
+/* Warm every slide into the cache up front. loadSlide is async, and
+   `steps` — how many beats the current slide has — is only assigned
+   AFTER that fetch resolves. On the first visit to any slide the
+   fetch is a real round trip, and a second clicker press inside that
+   window evaluated advance() against the PREVIOUS slide's beat count:
+   at the opening that skipped both beats of the scan-in slide and
+   opened the gauge on 30 phones before anyone had been told to scan.
+   Prefetching makes every visit a cache hit. */
+session.segments.forEach(seg => { if (seg.slide) loadSlide(seg.slide, '../'); });
+
 /* Typed URL in the corner, on every single screen — a standing
    requirement, and the thing that keeps working when the QR is hidden
    on slides. It fades out while the badge is parked bottom-right,
@@ -84,6 +94,10 @@ chrome(document.body);
 joinBadge();
 if (api.OFFLINE) offlineBadge();
 
+let drawToken = 0;      // see draw(). Declared HERE, not beside draw(), because
+                        // `let` does not hoist and bus.subscribe() calls draw()
+                        // before that line would run — which threw a temporal
+                        // dead zone error and broke the screen page completely.
 let steps = 0;          // beats in the slide currently on screen
 let sig   = '';         // last thing drawn, to avoid needless redraws
 let mod   = null;       // loaded activity module
@@ -92,6 +106,15 @@ let modId = null;
 bus.subscribe(({ state }) => { draw(state); });
 
 async function draw(state) {
+  /* draw() awaits, and bus.subscribe never awaits draw(), so two can
+     be in flight at once. Whichever finishes last mounts, but `sig`
+     was written by whichever reached it last — they disagree, and sig
+     is what suppresses future redraws. The observed result was a vote
+     mounted on top of a slide with the phones still saying "waiting".
+     Anything that resumes after a newer draw has started must abort. */
+  const token = ++drawToken;
+  const stale = () => token !== drawToken;
+
   const { segment, step, phase } = state;
   const seg = segmentAt(session, segment);
 
@@ -125,10 +148,16 @@ async function draw(state) {
       modId = seg.activity; mod = null;
       try { mod = await loadActivity(seg.activity, '../'); }
       catch {
+        /* Reset modId, or one transient blip while importing leaves
+           this segment permanently showing "not built yet" — the guard
+           below makes every later draw a no-op because modId still
+           matches. Clearing it means backing out and forward retries. */
+        modId = null;
         sig = 'missing:' + seg.activity;
         return mount(stage, h('div', { class: 'state-msg' },
           h('p', { class: 'faint mono' }, seg.activity + ' — not built yet')));
       }
+      if (stale()) return;
     }
     if (!mod) return;
 
@@ -151,6 +180,7 @@ async function draw(state) {
 
   if (!sameSlide) {
     const html = await loadSlide(seg.slide, '../');
+    if (stale()) return;
     const box = h('div', { class: 'slide fade-in' });
     box.innerHTML = html || placeholder(seg);
 
@@ -215,6 +245,13 @@ addEventListener('keydown', e => {
   const fwd = FWD.includes(e.key), bak = BACK.includes(e.key);
   if (!fwd && !bak) return;
   e.preventDefault();
+
+  /* Until the first poll lands, bus.state is still the default title
+     card. Advancing from it returns segment 1 unconditionally — so a
+     press in the second after reloading the screen laptop mid-session
+     threw the entire room, screen and all 30 phones, back to the
+     start. Wait for the sheet. */
+  if (!bus.synced && !api.OFFLINE) return;
   if (document.body.classList.contains('blacked')) return;  // frozen while blank
   if (moving) return;                  // clickers double-fire; ignore the echo
   /* This guard exists ONLY to swallow the duplicate keydown a physical
