@@ -1,0 +1,123 @@
+<!-- SEGMENT 3 · Can a revision history be faked? · ~4 min
+     Interaction: i2-fake-history (yes/no, HOLD)
+
+     Job of this slide: make the room trust revision history BEFORE
+     they vote. Everything here is the case FOR it — what it shows,
+     how well it shows it, how obvious a paste looks. The vote then
+     asks whether it can be faked, and the autotyper answers.
+
+     Beat 0 opens by quoting the people in segment 2 who wrote
+     "revision history". If nobody did, the quotes are simply absent
+     and the data-echo-if-empty line covers it — no failure state.
+
+     The document below is CONSTRUCTED. Say so on the day. -->
+
+<div class="slide wide">
+
+  <h1 class="center" data-until="2">You already have a tool for this.</h1>
+
+  <!-- Beats 0-2 swap in the same space. Two inspection panels cannot
+       share the screen, and the screen page clips rather than scrolls. -->
+  <div class="stack" style="margin-top:var(--s-5)">
+
+  <div data-until="0">
+    <div data-echo="i1-slop-wall"
+         data-echo-match="revision|version history|edit history|google doc"
+         data-echo-max="3"
+         style="max-width:70ch;margin:0 auto"></div>
+
+    <p data-echo-if-empty class="center muted" style="max-width:60ch;margin:0 auto">
+      Revision history is the answer I hear most often — and it is a good answer.
+    </p>
+  </div>
+
+  <!-- BEAT 1 — what it actually shows -->
+  <div data-step="1" data-until="1">
+
+    <div class="doc">
+      <div class="doc__bar">
+        <span class="doc__name">Friar Laurence — body paragraph</span>
+        <span class="faint mono">·  reconstruction</span>
+        <span class="spacer"></span>
+        <span class="chip chip--ok">consistent with human composition</span>
+      </div>
+
+      <div class="doc__meta">
+        <div><b>47 min</b><span>time in document</span></div>
+        <div><b>3</b><span>writing sessions</span></div>
+        <div><b>214</b><span>revisions</span></div>
+        <div><b>0</b><span>bulk insertions</span></div>
+      </div>
+
+      <div class="timeline" aria-hidden="true">
+        <i style="height:22%"></i><i style="height:48%"></i><i style="height:61%"></i>
+        <i style="height:39%"></i><i data-kind="gap" style="height:6%"></i>
+        <i data-kind="gap" style="height:4%"></i><i style="height:34%"></i>
+        <i style="height:72%"></i><i style="height:55%"></i><i style="height:29%"></i>
+        <i data-kind="gap" style="height:5%"></i><i style="height:44%"></i>
+        <i style="height:83%"></i><i style="height:37%"></i><i style="height:18%"></i>
+      </div>
+
+      <div class="evt">
+        <div><time>19:04</time><span>typing — opening sentence, rewritten twice</span><span class="amt">+186</span></div>
+        <div><time>19:11</time><span>deleted a sentence, retyped it</span><span class="amt">−94 / +120</span></div>
+        <div><time>19:19</time><span>idle</span><span class="amt">6 min</span></div>
+        <div><time>19:25</time><span>typing — evidence and commentary</span><span class="amt">+410</span></div>
+        <div><time>19:38</time><span>typing — conclusion, then edits throughout</span><span class="amt">+233</span></div>
+      </div>
+    </div>
+
+    <p class="center muted" style="margin-top:var(--s-4)">
+      Hesitation. Deletions. Gaps. This is what writing looks like from the outside.
+    </p>
+  </div>
+
+  <!-- BEAT 2 — and the thing everybody looks for -->
+  <div data-step="2" data-until="2">
+
+    <div class="doc">
+      <div class="doc__bar">
+        <span class="doc__name">Same assignment — a different student</span>
+        <span class="spacer"></span>
+        <span class="chip chip--hot">1 bulk insertion</span>
+      </div>
+
+      <div class="doc__meta">
+        <div><b>4 min</b><span>time in document</span></div>
+        <div><b>1</b><span>writing session</span></div>
+        <div><b>6</b><span>revisions</span></div>
+        <div><b>1</b><span>bulk insertion</span></div>
+      </div>
+
+      <div class="timeline" aria-hidden="true">
+        <i style="height:5%"></i><i data-kind="paste" style="height:100%"></i>
+        <i style="height:8%"></i><i style="height:6%"></i><i style="height:4%"></i>
+        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
+        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
+        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
+        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
+        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
+      </div>
+
+      <div class="evt">
+        <div><time>23:47</time><span>typing — the title</span><span class="amt">+38</span></div>
+        <div data-kind="paste"><time>23:48</time><span>pasted — the entire paragraph, at once</span><span class="amt">+1,247</span></div>
+        <div><time>23:50</time><span>changed two words</span><span class="amt">+11 / −9</span></div>
+      </div>
+    </div>
+
+    <p class="center lead" style="margin-top:var(--s-4)">
+      That is the one everyone catches.
+    </p>
+  </div>
+
+  <!-- BEAT 3 — everything else clears. The question stands alone,
+       which is both the stronger beat and the only way it is
+       guaranteed to fit on a short screen. -->
+  <div data-step="3" class="center" style="align-self:center">
+    <p class="lead" style="font-size:var(--t-2xl);margin:0">So: is this enough?</p>
+  </div>
+
+  </div><!-- /.stack -->
+
+</div>

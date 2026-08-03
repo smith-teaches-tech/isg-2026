@@ -17,9 +17,9 @@
      The presenter page on your phone is for out-of-band moves
      (jump to a segment, back to the start) — not required to run. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=11">
-<link rel="stylesheet" href="../assets/css/base.css?v=11">
-<script src="../config.js?v=11"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=12">
+<link rel="stylesheet" href="../assets/css/base.css?v=12">
+<script src="../config.js?v=12"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -70,7 +70,7 @@
 import { bus, loadActivity, loadSession } from '../assets/js/bus.js';
 import { api } from '../assets/js/api.js';
 import { advance, back, sectionBack, sectionForward, segmentAt } from '../assets/js/flow.js';
-import { loadSlide, stepCount, applySteps, placeholder } from '../assets/js/slides.js';
+import { loadSlide, stepCount, applySteps, placeholder, fillEchoes } from '../assets/js/slides.js';
 import { h, mount, chrome, joinBadge, setJoinSize, offlineBadge } from '../assets/js/ui.js';
 
 const stage = document.getElementById('stage');
@@ -153,6 +153,8 @@ async function draw(state) {
     const html = await loadSlide(seg.slide, '../');
     const box = h('div', { class: 'slide fade-in' });
     box.innerHTML = html || placeholder(seg);
+    /* Quote the room back at itself, where a slide asks for it. */
+    fillEchoes(box, id => bus.rowsFor(id));
     mount(stage, box);
     steps = stepCount(box);
 

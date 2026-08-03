@@ -9,7 +9,7 @@
   "segments": [
     { "n": 1,  "min": 1,   "title": "Scan-in + gut-check gauge",              "slide": "01-scan-in",       "activity": "i0-gauge" },
     { "n": 2,  "min": 2.5, "title": "How do you protect from AI slop?",       "slide": "02-opening",       "activity": "i1-slop-wall" },
-    { "n": 3,  "min": 4,   "title": "Autotyper demo + Human or bot?",         "slide": "03-autotyper",     "activity": "i2-human-or-bot" },
+    { "n": 3,  "min": 4,   "title": "Can a revision history be faked?",       "slide": "03-revision-history", "activity": "i2-fake-history" },
     { "n": 4,  "min": 3,   "title": "What happens to student brains",         "slide": "04-brains",        "activity": null },
     { "n": 5,  "min": 4,   "title": "More or less writing?",                  "slide": "05-how-much",      "activity": "i3-how-much" },
     { "n": 6,  "min": 2,   "title": "THE DILEMMA",                            "slide": "06-dilemma",       "activity": null },
@@ -34,7 +34,7 @@
   "activities": {
     "i0-gauge":        { "label": "I-0 · Gut-check gauge",     "reveal": "hold",  "built": true  },
     "i1-slop-wall":    { "label": "I-1 · Anti-slop wall",      "reveal": "live",  "built": true  },
-    "i2-human-or-bot": { "label": "I-2 · Human or bot?",       "reveal": "hold",  "built": false },
+    "i2-fake-history": { "label": "I-2 · Can it be faked?",     "reveal": "hold",  "built": false },
     "i3-how-much":     { "label": "I-3 · How much writing?",   "reveal": "hold",  "built": false },
     "i4-flag-rate":    { "label": "I-4 · Guess the flag rate", "reveal": "hold",  "built": false },
     "i5-inception":    { "label": "I-5 · Inception Effect",    "reveal": "hold",  "built": false },
