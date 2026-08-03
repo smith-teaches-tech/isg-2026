@@ -90,13 +90,21 @@ export const bus = {
         this.synced = true;
 
         if (shrank || gotRows || changedState)
-          return emit({ rows: this.rows, state: this.state, changedState: true });
+          emit({ rows: this.rows, state: this.state, changedState: true, cleared: shrank });
 
       } catch (err) {
         this.connected = false;
         console.warn('[isg] poll failed', err);
+      } finally {
+        /* ALWAYS re-arm. A previous version did `return emit(...)` on an
+           eventful poll, which exited this function BEFORE re-scheduling
+           and killed the poll loop after the very first update — so a
+           phone polled once on load and then froze, never seeing a vote
+           open, a reset, or a re-open. The screen hid it because the
+           presenter drives it locally via setState; the audience has no
+           such driver and just stopped following the room. */
+        timer = setTimeout(tick, wait());
       }
-      timer = setTimeout(tick, wait());
     };
     tick();
   },

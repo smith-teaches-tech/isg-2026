@@ -35,8 +35,20 @@ if (api.OFFLINE) offlineBadge();
 
 const session = await loadSession();
 let sig = '', mod = null, modId = null;
+let lastSeg = null;
 
-bus.subscribe(async ({ state }) => {
+bus.subscribe(async ({ state, cleared }) => {
+  /* Reset must reach the phone. The presenter's ↺ sends the room to the
+     title card (segment 0); `clear` shrinks the sheet (cleared=true).
+     Neither touched device-local answers, so a phone kept showing "You
+     said Yes" from an earlier vote and refused to let its owner vote or
+     interact again. Forget the saved answers on either signal — once per
+     reset (on the transition into segment 0), not every poll, so the
+     waiting screen and its name field don't flicker. */
+  const resetting = (state.segment === 0 && lastSeg !== 0) || cleared;
+  if (resetting) { device.reset(); sig = ''; }
+  lastSeg = state.segment;
+
   const seg = segmentAt(session, state.segment);
   const live = seg && seg.activity && state.phase !== 'idle';
 

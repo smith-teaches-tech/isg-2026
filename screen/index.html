@@ -131,7 +131,7 @@ async function draw(state) {
      slide and the first interaction, and testing "segment <= 1" first
      left the full-size badge sitting on top of the gauge histogram. */
   const interacting = phase !== 'idle' && seg && seg.activity;
-  setJoinSize(interacting ? 'small' : segment <= 1 ? 'big' : 'hidden');
+  setJoinSize(interacting ? 'small' : segment <= 1 ? 'big' : 'small');
 
   // ---- pre-session title card ----
   if (!seg) {
