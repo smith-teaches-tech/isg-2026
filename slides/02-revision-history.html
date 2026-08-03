@@ -1,4 +1,4 @@
-<!-- SEGMENT 3 · Can a revision history be faked? · ~4 min
+<!-- SEGMENT 2 · Can a revision history be faked? · ~4 min
      Interaction: i2-fake-history (yes/no, HOLD)
 
      Job of this slide: make the room TRUST revision history before
@@ -6,17 +6,166 @@
      how well, how obvious a paste is. The vote then asks whether it
      can be faked, and the autotyper answers.
 
-     Beat 0 quotes the people in segment 2 who said "revision
-     history". Nobody says it → the quotes are absent and the
-     data-echo-if-empty line covers the slide. No failure state.
+     THE MOVING-BEAT PATTERN (reusable — see build-log):
+     A beat animates itself when it is the one on screen. Every
+     animation below is scoped to  [aria-hidden="false"]  — the
+     attribute the slide engine (applySteps) already sets on the
+     visible beat. So the animation RUNS while the beat is up, LOOPS
+     until you advance, and RESTARTS from the top each time you land
+     on the beat. No JavaScript. A static beat just carries no
+     animation and holds until you advance.
+
+     Beat 0 quotes the people in segment 1 who said "revision history".
+     Beat 1 (Playback)  — the genuine draft writing itself in.
+     Beat 2 (Paste)     — the caught paste, red novelty banner.
+     Beat 3             — the question, alone.
 
      Beats swap inside .stack — the screen page is overflow:hidden, so
      two full panels would silently clip rather than scroll.
 
-     Both documents are CONSTRUCTED. The sidebar is modelled on the
-     real PaperTrail Inspect UI. Say both out loud. -->
+     Both documents are CONSTRUCTED. Say so out loud. -->
 
-<div class="slide wide">
+<div class="slide wide s2">
+
+  <style>
+  /* ============================================================
+     Segment-2 moving beats. All keyframes run only while the beat
+     is the visible one ( [aria-hidden="false"] ), so they loop in
+     place and reset cleanly on the next visit.
+     ============================================================ */
+
+  /* keep the mock a sensible height for two-panel beats */
+  .s2 .ptframe { height: 62vh; }
+
+  /* ---------- BEAT 1 · PLAYBACK ------------------------------ */
+
+  /* the document writes itself in: a top-down reveal, with a thin
+     "playback head" sweeping down the page as it fills */
+  .s2-pb-reveal { position: relative; }
+  .s2-pb-head {
+    position: absolute; left: -2%; right: -2%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pt-blue), transparent);
+    box-shadow: 0 0 10px var(--pt-blue); opacity: 0; top: 0;
+  }
+  .s2-playback[aria-hidden="false"] .s2-pb-reveal {
+    animation: s2pbReveal 11s ease-in-out infinite;
+  }
+  .s2-playback[aria-hidden="false"] .s2-pb-head {
+    animation: s2pbHead 11s ease-in-out infinite;
+  }
+  @keyframes s2pbReveal {
+    0%,7%  { clip-path: inset(0 0 100% 0); }
+    68%    { clip-path: inset(0 0 0 0); }
+    93%    { clip-path: inset(0 0 0 0); }
+    100%   { clip-path: inset(0 0 100% 0); }
+  }
+  @keyframes s2pbHead {
+    0%,6%  { top: 0; opacity: 0; }
+    8%     { opacity: 1; }
+    66%    { top: 100%; opacity: 1; }
+    70%    { opacity: 0; }
+    100%   { opacity: 0; }
+  }
+
+  /* the "Open Playback Window" button flashes as if clicked, then
+     a progress bar under it fills across the replay */
+  .s2-playback[aria-hidden="false"] .s2-pb-btn {
+    animation: s2pbBtn 11s ease-in-out infinite;
+  }
+  @keyframes s2pbBtn {
+    0%,3%  { filter: none; }
+    4%,9%  { filter: brightness(.8); box-shadow: 0 0 0 3px rgba(74,111,165,.35); }
+    12%,100% { filter: none; box-shadow: none; }
+  }
+  .s2-pb-prog { height: 2.4cqh; margin-top: 1.4cqh; background: #eef1f4;
+                border-radius: 99px; overflow: hidden; }
+  .s2-pb-prog > i { display: block; height: 100%; width: 0;
+                    background: var(--pt-blue); border-radius: 99px; }
+  .s2-playback[aria-hidden="false"] .s2-pb-prog > i {
+    animation: s2pbProg 11s ease-in-out infinite;
+  }
+  @keyframes s2pbProg {
+    0%,7% { width: 0; } 68% { width: 100%; } 93% { width: 100%; } 100% { width: 0; }
+  }
+
+  /* the revision timeline fills left-to-right (a mask receding) */
+  .s2-pb-tl { position: relative; }
+  .s2-pb-tl .s2-mask {
+    position: absolute; top: 0; bottom: 0; right: 0; width: 100%;
+    background: #eee; border-radius: 99px;   /* anchored right so it uncovers L→R */
+  }
+  .s2-playback[aria-hidden="false"] .s2-pb-tl .s2-mask {
+    animation: s2wipe 11s ease-in-out infinite;
+  }
+  @keyframes s2wipe {
+    0%,7% { width: 100%; } 64% { width: 0; } 93% { width: 0; } 100% { width: 100%; }
+  }
+
+  /* writing-session rows drop in one after another */
+  .s2-playback[aria-hidden="false"] .s2-pb-sess {
+    opacity: 0; animation: s2rowIn 11s ease-in-out infinite;
+  }
+  .s2-playback[aria-hidden="false"] .s2-pb-sess:nth-of-type(2) { animation-delay: .5s; }
+  @keyframes s2rowIn {
+    0%,38% { opacity: 0; transform: translateY(6px); }
+    46%,90% { opacity: 1; transform: none; }
+    100% { opacity: 0; }
+  }
+
+  /* ---------- BEAT 2 · PASTE ANALYSIS ------------------------ */
+
+  /* the Paste Analysis panel expands open */
+  .s2-paste-panel { overflow: hidden; }
+  .s2-paste[aria-hidden="false"] .s2-paste-panel {
+    animation: s2panelOpen 7s ease-in-out infinite;
+  }
+  @keyframes s2panelOpen {
+    0%,6%  { max-height: 0; opacity: 0; }
+    16%,92%{ max-height: 40cqh; opacity: 1; }
+    100%   { max-height: 0; opacity: 0; }
+  }
+
+  /* the red banner slams in and gives one shake */
+  .s2-paste-banner {
+    background: var(--pt-red); color: #fff; border-radius: 6px;
+    padding: 1.8cqh 2cqh; margin-top: 1.6cqh;
+    display: flex; align-items: center; gap: 1.4cqh;
+    font-weight: 800; font-size: 2.7cqh; letter-spacing: .01em;
+    box-shadow: 0 6px 22px rgba(234,67,53,.5); opacity: 0;
+  }
+  .s2-paste-banner .big { font-size: 3.6cqh; font-variant-numeric: tabular-nums; }
+  .s2-paste[aria-hidden="false"] .s2-paste-banner {
+    animation: s2slam 7s ease-in-out infinite;
+  }
+  @keyframes s2slam {
+    0%,22%   { opacity: 0; transform: translateY(-26px) scale(.96); }
+    30%      { opacity: 1; transform: translateY(0) scale(1.03); }
+    33%      { transform: translateX(-4px); }
+    36%      { transform: translateX(4px); }
+    39%,88%  { opacity: 1; transform: translateX(0) scale(1); }
+    100%     { opacity: 0; transform: translateY(-26px) scale(.96); }
+  }
+
+  /* the novelty bar fills to 90% */
+  .s2-nov { height: 3cqh; margin-top: 1.4cqh; background: #f3d6d3;
+            border-radius: 99px; overflow: hidden; }
+  .s2-nov > i { display: block; height: 100%; width: 0; background: var(--pt-red); }
+  .s2-paste[aria-hidden="false"] .s2-nov > i {
+    animation: s2nov 7s ease-in-out infinite;
+  }
+  @keyframes s2nov {
+    0%,30% { width: 0; } 46% { width: 90%; } 88% { width: 90%; } 100% { width: 0; }
+  }
+
+  /* the red paste block in the timeline pulses for attention */
+  .s2-paste[aria-hidden="false"] .pttl .r {
+    animation: s2pulse 7s ease-in-out infinite;
+  }
+  @keyframes s2pulse {
+    0%,40% { filter: none; } 50% { filter: brightness(1.25); }
+    60% { filter: none; } 70% { filter: brightness(1.25); } 80%,100% { filter: none; }
+  }
+  </style>
 
   <h1 class="center" data-until="2">You already have a tool for this.</h1>
 
@@ -34,18 +183,21 @@
       </p>
     </div>
 
-    <!-- BEAT 1 — a genuine draft, inspected -->
-    <div data-step="1" data-until="1">
+    <!-- BEAT 1 — a genuine draft, played back -->
+    <div data-step="1" data-until="1" class="s2beat s2-playback">
       <div class="ptframe">
         <div class="ptdoc">
           <h4>The Weight of Inaction: Friar Laurence's Silence</h4>
           <div class="byline">English 10 · Draft 2 — reconstruction</div>
-          <p>Friar Laurence is the only adult in the play who knows everything, and at
-             every turn he conceals rather than intervenes.</p>
-          <p>His knowledge and authority make him complicit in a way the feuding families
-             are not: they act out of ignorance, he acts out of calculation.</p>
-          <p>By the time he arrives at the tomb, the secret he kept has already done the work
-             the poison only finishes.</p>
+          <div class="s2-pb-reveal">
+            <div class="s2-pb-head"></div>
+            <p>Friar Laurence is the only adult in the play who knows everything, and at
+               every turn he conceals rather than intervenes.</p>
+            <p>His knowledge and authority make him complicit in a way the feuding families
+               are not: they act out of ignorance, he acts out of calculation.</p>
+            <p>By the time he arrives at the tomb, the secret he kept has already done the work
+               the poison only finishes.</p>
+          </div>
         </div>
 
         <div class="ptside">
@@ -57,31 +209,28 @@
             </div>
           </div>
           <div class="ptside__body">
-            <button class="ptbtn ptbtn--blue">▶ Open Playback Window</button>
+            <button class="ptbtn ptbtn--blue s2-pb-btn">▶ Open Playback Window</button>
+            <div class="s2-pb-prog"><i></i></div>
 
             <div class="ptsec">
               <div class="ptsec__t">📈 Revision Timeline</div>
-              <div class="pttl">
+              <div class="pttl s2-pb-tl">
                 <span class="b" style="width:34%"></span><span class="g" style="width:9%"></span>
                 <span class="b" style="width:28%"></span><span class="g" style="width:6%"></span>
                 <span class="b" style="width:23%"></span>
+                <span class="s2-mask"></span>
               </div>
               <div class="ptlegend"><span><b>●</b> revision</span><span class="rd">● paste</span><span class="og">⚡ struggle</span></div>
             </div>
 
             <div class="ptsec">
-              <div class="ptsec__t">📋 Paste Events <span class="ptbadge ptbadge--zero">0</span><span class="chev">▼</span></div>
-            </div>
-
-            <div class="ptsec">
               <div class="ptsec__t">🕐 Writing Sessions<span class="chev">▼</span></div>
-              <div class="ptrow">Mon 7:04–7:31pm · 27 min</div>
-              <div class="ptrow">Wed 6:40–7:00pm · 20 min</div>
+              <div class="ptrow s2-pb-sess">Mon 7:04–7:31pm · 27 min</div>
+              <div class="ptrow s2-pb-sess">Wed 6:40–7:00pm · 20 min</div>
             </div>
 
             <div class="ptsec">
-              <div class="ptsec__t">⚡ Struggle Moments <span class="ptbadge ptbadge--o">1</span><span class="chev">▼</span></div>
-              <div class="ptrow"><b>Paragraph 2</b> — 6 min pause, 3 deletions before final phrasing.</div>
+              <div class="ptsec__t">📋 Paste Events <span class="ptbadge ptbadge--zero">0</span><span class="chev">▼</span></div>
             </div>
 
             <div class="ptsec">
@@ -93,12 +242,13 @@
       </div>
 
       <p class="center muted" style="margin-top:var(--s-4)">
-        Hesitation. Deletions. A six-minute pause. This is what writing looks like from the outside.
+        Watch it write. Hesitation, deletions, two sessions, a six-minute pause —
+        this is what writing looks like from the outside.
       </p>
     </div>
 
     <!-- BEAT 2 — the one everybody catches -->
-    <div data-step="2" data-until="2">
+    <div data-step="2" data-until="2" class="s2beat s2-paste">
       <div class="ptframe">
         <div class="ptdoc">
           <h4>The Weight of Inaction: Friar Laurence's Silence</h4>
@@ -114,12 +264,10 @@
             <div class="ico"></div>
             <div>
               <div class="wm">PaperTrail&trade; <em>Inspect</em></div>
-              <div class="sub">Revision analysis</div>
+              <div class="sub">Paste analysis</div>
             </div>
           </div>
           <div class="ptside__body">
-            <button class="ptbtn ptbtn--blue">▶ Open Playback Window</button>
-
             <div class="ptsec">
               <div class="ptsec__t">📈 Revision Timeline</div>
               <div class="pttl">
@@ -130,17 +278,20 @@
             </div>
 
             <div class="ptsec">
-              <div class="ptsec__t">📋 Paste Events <span class="ptbadge">1</span><span class="chev">▼</span></div>
-              <div class="ptrow"><b>Paste #1</b> — 1,247 characters in one second · 4% overlap with prior text</div>
+              <div class="ptsec__t">📋 Paste Analysis <span class="ptbadge">1</span><span class="chev">▼</span></div>
+              <div class="s2-paste-panel">
+                <div class="s2-paste-banner">
+                  <span>⚠</span>
+                  <span>PASTE NOVELTY <span class="big">90%</span></span>
+                </div>
+                <div class="s2-nov"><i></i></div>
+                <div class="ptrow"><b>Paste #1</b> — 1,247 characters in one second · 90% new to this document</div>
+              </div>
             </div>
 
             <div class="ptsec">
               <div class="ptsec__t">🕐 Writing Sessions<span class="chev">▼</span></div>
               <div class="ptrow">Sun 11:47–11:51pm · 4 min</div>
-            </div>
-
-            <div class="ptsec">
-              <div class="ptsec__t">⚡ Struggle Moments <span class="ptbadge ptbadge--zero">0</span><span class="chev">▼</span></div>
             </div>
 
             <div class="ptsec">

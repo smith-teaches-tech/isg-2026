@@ -71,8 +71,18 @@ function finalText() {
 }
 
 /* Module-level, because the screen page re-renders on every poll and
-   a late-arriving row must not restart a running animation. */
+   a late-arriving row must not restart a running animation. `run.el`
+   is a STABLE wrapper the screen re-parents each poll; the mock is
+   rebuilt inside it on every loop, so re-parenting never interrupts
+   anything and the element the screen holds never changes. */
 let run = null;
+
+/* Timer helper. Fires only while the current run is alive, so a stop()
+   between scheduling and firing is a clean no-op. */
+const schedule = (ms, fn) => {
+  if (!run) return;
+  run.timers.push(setTimeout(() => { if (run && !run.dead) fn(); }, ms));
+};
 
 function stop() {
   if (run) { run.dead = true; run.timers.forEach(clearTimeout); run = null; }
@@ -151,19 +161,21 @@ export default {
            So the mock lives at module level and gets re-parented into
            whatever root we are given. The timers hold element
            references, so moving it does not interrupt anything. */
-        if (run && !run.dead) { mount(root, run.box.el); return; }
+        if (run && !run.dead) { mount(root, run.el); return; }
         stop();
-        const box = buildAutotyper();
-        mount(root, box.el);
-        return play(box);
+        run = { dead: false, timers: [], el: h('div', { style: 'width:100%' }) };
+        mount(root, run.el);
+        cycle();
+        return;
       }
 
       /* ---- REVEAL ----
-         Deliberately NOT stop()ing. Over-clicking past a 30-second
-         animation is the easiest mistake on this slide, and pressing
-         back used to restart it from a blank page — another 30
-         seconds, with no way to skip. Keeping the run alive means
-         going back re-attaches the document exactly where it was. */
+         Stop the loop here. It now repeats until you advance (Michael's
+         rule for moving beats), so there is nothing to preserve across
+         a back-press — landing on `locked` again just restarts it from
+         the top, which is what you want anyway. Stopping also means the
+         typing timers aren't left running invisibly behind the reveal. */
+      stop();
 
       const counts = tally(unique, 'value');
       const yes = counts.get('yes') || 0;
@@ -238,25 +250,37 @@ function buildAutotyper() {
   return { el, page, caret, area, status, btn };
 }
 
-function play(box) {
-  const state = { dead: false, timers: [], box };
-  run = state;
+/* One loop iteration. A fresh mock is built inside the stable run.el,
+   typed out, ended on the Inspect kill-shot, held so the room can read
+   it, then rebuilt — the beat repeats until the presenter advances
+   (which calls stop). A backstop: if run.el is no longer inside #stage
+   (a presenter jump straight out of `locked`), let the loop die. */
+function cycle() {
+  if (!run || run.dead) return;
+  const stage = document.getElementById('stage');
+  if (stage && run.el && !stage.contains(run.el)) return stop();
 
-  const at = (fn, ms) => state.timers.push(setTimeout(() => { if (!state.dead) fn(); }, ms));
+  const box = buildAutotyper();
+  mount(run.el, box.el);
+  playOnce(box, () => schedule(4500, cycle));   // hold the kill-shot, then loop
+}
+
+function playOnce(box, onDone) {
+  const at = schedule;                                  // (ms, fn)
 
   const FULL  = SCRIPT.map(s => s.t || '').join('');   // keystroke count, for the % readout
   const PASTE = finalText();                           // what a student would actually paste
 
   /* 1 — the text appears in the sidebar, as if pasted */
-  at(() => {
+  at(1200, () => {
     box.area.textContent = PASTE;
     box.area.classList.add('atarea--filled');
     box.status.textContent = PASTE.length + ' characters ready';
-  }, 1200);
+  });
 
   /* 2 — the button is pressed */
-  at(() => { box.btn.classList.add('atbtn--press'); }, 2600);
-  at(() => { box.btn.classList.remove('atbtn--press'); box.btn.textContent = 'Typing…'; }, 2900);
+  at(2600, () => { box.btn.classList.add('atbtn--press'); });
+  at(2900, () => { box.btn.classList.remove('atbtn--press'); box.btn.textContent = 'Typing…'; });
 
   /* 3 — the document types itself */
   let para = h('p', {});
@@ -266,21 +290,21 @@ function play(box) {
   const total = FULL.length;
 
   const step = () => {
-    if (state.dead) return;
+    if (!run || run.dead) return;
     if (i >= SCRIPT.length) return finish();
 
     const ins = SCRIPT[i];
 
-    if (ins.para) { para = h('p', {}); box.page.insertBefore(para, box.caret); i++; return at(step, 500); }
-    if (ins.p && !ins.t && !ins.b) { i++; return at(step, ins.p); }
+    if (ins.para) { para = h('p', {}); box.page.insertBefore(para, box.caret); i++; return at(500, step); }
+    if (ins.p && !ins.t && !ins.b) { i++; return at(ins.p, step); }
 
     if (ins.b !== undefined) {                       // backspace, visibly
       let n = ins.b;
       const chew = () => {
-        if (state.dead) return;
-        if (n <= 0) { i++; return at(step, 260); }
+        if (!run || run.dead) return;
+        if (n <= 0) { i++; return at(260, step); }
         para.textContent = para.textContent.slice(0, -1);
-        n--; at(chew, 38);
+        n--; at(38, chew);
       };
       return chew();
     }
@@ -290,39 +314,37 @@ function play(box) {
     const text = ins.t || '';
     let k = 0;
     const tick = () => {
-      if (state.dead) return;
+      if (!run || run.dead) return;
       if (k >= text.length) {
         const after = ins.p || 0;
         i++;
-        return at(step, after || 90);
+        return at(after || 90, step);
       }
       para.textContent += text[k++];
       chars++;
       const frac = chars / total;
       box.status.textContent = 'Typing… ' + Math.min(99, Math.round(frac * 100)) + '%';
       const base = frac < 0.5 ? 62 : 22;
-      at(tick, base + Math.random() * base * 0.7);
+      at(base + Math.random() * base * 0.7, tick);
     };
     tick();
   };
 
   const finish = () => {
-    state.done = true;
     box.status.textContent = 'Done';
     box.btn.textContent = 'Type for Me';
     box.caret.remove();
 
     /* 4 — and now look at what it produced. Same report as beat 1. */
-    at(() => {
-      if (state.dead) return;
+    at(1400, () => {
       const side = box.el.querySelector('.atside');
       if (side) side.replaceWith(inspectPanel());
       box.el.classList.add('ptframe--flip');
-    }, 1400);
+      onDone();
+    });
   };
 
-  at(step, 3400);
-  return state;
+  at(3400, step);
 }
 
 /* The reassuring report — identical to slide 03 beat 1. */
