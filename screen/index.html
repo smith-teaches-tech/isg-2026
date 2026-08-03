@@ -17,9 +17,9 @@
      The presenter page on your phone is for out-of-band moves
      (jump to a segment, back to the start) — not required to run. -->
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=10">
-<link rel="stylesheet" href="../assets/css/base.css?v=10">
-<script src="../config.js?v=10"></script>
+<link rel="stylesheet" href="../assets/css/tokens.css?v=11">
+<link rel="stylesheet" href="../assets/css/base.css?v=11">
+<script src="../config.js?v=11"></script>
 <style>
   body { overflow: hidden; }
   .app-body { min-height: 100dvh; }
@@ -98,7 +98,8 @@ async function draw(state) {
   document.getElementById('segmark').textContent =
     segment ? `${segment}/${session.segments.length} · ${phase}` : '';
   document.getElementById('ctrlwhere').textContent =
-    seg ? `${segment}/${session.segments.length} · ${seg.title}` : 'title card';
+    (seg ? `${segment}/${session.segments.length} · ${seg.title}` : 'title card') +
+    `  ·  ${innerWidth}×${innerHeight}`;
 
   /* Big while the room is arriving; small and out of the way while an
      interaction is open, so a latecomer can scan at the only moment
@@ -238,11 +239,18 @@ addEventListener('keydown', e => {
 const ctrlbar = document.getElementById('ctrlbar');
 let hideBar;
 
-addEventListener('mousemove', () => {
+function showBar() {
   ctrlbar.dataset.show = '1';
   clearTimeout(hideBar);
   hideBar = setTimeout(() => { ctrlbar.dataset.show = '0'; }, 2500);
-});
+}
+addEventListener('mousemove', showBar);
+
+/* The viewport size is in the bar's label. It is the only number that
+   decides how this lays out — not the iBoard's panel resolution — and
+   it changes with mirror vs extend, display scaling, and fullscreen.
+   Redraw the label when it changes so you can just read it off. */
+addEventListener('resize', () => { sig = ''; draw(bus.state); showBar(); });
 
 ctrlbar.addEventListener('click', async e => {
   e.stopPropagation();
@@ -272,9 +280,16 @@ let refocusedAt = 0;
 addEventListener('blur',  () => { refocusedAt = 0; showFocusHint(true); });
 addEventListener('focus', () => { refocusedAt = Date.now(); showFocusHint(false); });
 
-addEventListener('click', () => {
+addEventListener('click', e => {
   if (Date.now() - refocusedAt < 400) return;   // that click was just for focus
   if (document.body.classList.contains('blacked')) return;
+
+  /* Dead strip along the bottom. The control bar lives there, and on a
+     touchscreen you have to touch the screen to summon it — without
+     this, that first touch would also jump a beat forward. Nothing in
+     the bottom 120px ever advances. */
+  if (e.clientY > innerHeight - 120) { showBar(); return; }
+
   dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 });
 
