@@ -1,0 +1,103 @@
+<!-- SEGMENT 4 · How much should students write? · ~4 min
+     Interaction: i3-how-much (4-option "how many can you grade?" poll, HOLD reveal)
+
+     Job of this slide: the rebuttal to "just make them write in class."
+     Two moves before the poll opens:
+       1. Writing is thinking (Emig) — and a callback to segment 3: those
+          students couldn't quote a sentence; you still carry ideas from
+          papers you wrote years ago. Michael opens ORALLY here — "think of
+          the hardest thing you ever wrote; what did that struggle do?"
+       2. The class-time visual (ONE clear moving beat): the writing they
+          need can't fit in class, so it has to go home. Michael talks over it.
+     Then a beat poses the poll and forward opens it.
+
+     The poll's reveal multiplies the room's grading capacity by four
+     (Gallagher's 4:1), landing the number the visual set up. Home is
+     exactly where AI lives — the handoff to THE DILEMMA (segment 5).
+
+     MOVING-BEAT PATTERN: the class-time animation is scoped to
+     [aria-hidden="false"], so it runs + loops while the beat is up and
+     restarts on each visit. Pure CSS. Beats swap inside .stack. -->
+
+<div class="slide wide s4">
+
+  <style>
+  /* ---- the class-time overflow visual (beat 2) --------------
+     One frame = everything a student needs to write in a week.
+     The blue box = what fits in class (~a quarter). The rest is
+     red and labelled "home". Red fills first, then the class box
+     reveals how small it is, then the "home" tag lands. Loops. */
+  .s4-ct .ct-stage  { width:min(78vw,1000px); margin:0 auto; }
+  .s4-ct .ct-labels { display:flex; justify-content:space-between;
+                      margin-bottom:var(--s-3); font-size:var(--t-base); font-weight:600; }
+  .s4-ct .ct-l-class{ color:var(--accent); }
+  .s4-ct .ct-l-home { color:var(--accent-hot); }
+  .s4-ct .ct-frame  { position:relative; height:16vh; background:var(--bg-input);
+                      border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .s4-ct .ct-need   { position:absolute; left:0; top:0; bottom:0; width:0;
+                      background:var(--accent-hot); }
+  .s4-ct .ct-class  { position:absolute; left:0; top:0; bottom:0; width:25%;
+                      background:var(--accent); border-right:3px dashed #fff;
+                      display:flex; align-items:center; justify-content:center;
+                      color:#05121f; font-weight:800; font-size:var(--t-lg); opacity:0; }
+  .s4-ct .ct-home   { position:absolute; left:62%; top:50%; transform:translateY(-50%);
+                      color:#fff; font-weight:800; font-size:var(--t-2xl); opacity:0;
+                      text-shadow:0 2px 12px rgba(0,0,0,.5); }
+
+  /* Build once on entry, then HOLD — the metaphor stays clear while
+     Michael talks. aria-hidden resets it, so it re-assembles on each
+     visit (iteration 1 + fill-mode both). */
+  .s4-ct[aria-hidden="false"] .ct-need  { animation:s4need 1.2s var(--ease) both; }
+  .s4-ct[aria-hidden="false"] .ct-class { animation:s4cls  .6s var(--ease) 1.35s both; }
+  .s4-ct[aria-hidden="false"] .ct-home  { animation:s4home .6s var(--ease) 2.15s both; }
+  @keyframes s4need { from{width:0} to{width:100%} }
+  @keyframes s4cls  { from{opacity:0} to{opacity:1} }
+  @keyframes s4home { from{opacity:0;transform:translateY(-50%) translateX(-10px)}
+                      to{opacity:1;transform:translateY(-50%)} }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — oral cold open -->
+    <div data-until="0" class="center" style="align-self:center">
+      <h1 style="max-width:20ch;margin:0 auto">Think of the hardest thing you ever wrote.</h1>
+      <p class="lead" style="font-size:var(--t-2xl);margin-top:var(--s-4)">What did that struggle actually do?</p>
+    </div>
+
+    <!-- BEAT 1 — writing is thinking (Emig) + segment-3 callback -->
+    <div data-step="1" data-until="1" class="center" style="align-self:center">
+      <h1 style="max-width:24ch;margin:0 auto">Writing is <span style="color:var(--accent-cool)">thinking</span> — not the record of it.</h1>
+      <p class="lead" style="max-width:42ch;margin:var(--s-5) auto 0">
+        Those students couldn&rsquo;t quote a sentence they had just produced. You still carry ideas from papers you wrote years ago.
+      </p>
+      <p class="faint" style="font-size:var(--t-sm);margin-top:var(--s-4)">Janet Emig, &ldquo;Writing as a Mode of Learning,&rdquo; 1977</p>
+    </div>
+
+    <!-- BEAT 2 — the class-time overflow visual (one clear beat) -->
+    <div data-step="2" data-until="2" class="s4-ct center" style="align-self:center;width:100%">
+      <h2 style="color:var(--ink-dim);margin-bottom:var(--s-6);max-width:30ch;margin-left:auto;margin-right:auto">
+        To actually grow, they have to write more than a class can hold.
+      </h2>
+      <div class="ct-stage">
+        <div class="ct-labels">
+          <span class="ct-l-class">what fits in class</span>
+          <span class="ct-l-home">the rest has to go home</span>
+        </div>
+        <div class="ct-frame">
+          <div class="ct-need"></div>
+          <div class="ct-class">class</div>
+          <div class="ct-home">&rarr; home</div>
+        </div>
+        <p class="faint" style="margin-top:var(--s-4)">one student &middot; one week of the writing they need</p>
+      </div>
+    </div>
+
+    <!-- BEAT 3 — bridge into the poll -->
+    <div data-step="3" class="center" style="align-self:center">
+      <h1 style="max-width:22ch;margin:0 auto">So be honest about capacity.</h1>
+      <p class="lead" style="font-size:var(--t-xl);margin-top:var(--s-4)">How much can you actually keep up with?</p>
+    </div>
+
+  </div><!-- /.stack -->
+
+</div>
