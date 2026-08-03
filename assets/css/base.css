@@ -311,100 +311,153 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
   color: var(--accent-warm);
 }
 
-/* --- document inspection panel ------------------------------
-   A reconstruction of what a revision-history inspector shows.
-   Reusable: segment 3 models it, 17 contrasts it with the old
-   similarity reports, 19 is the full forensic mock.
+/* --- Google-Docs-shaped app mock ----------------------------
+   One chrome, two sidebars. Segment 3 shows a document with the
+   PaperTrail Inspect sidebar (what the teacher can see); the
+   autotyper shows the same document with an Autotyper sidebar (what
+   the student can get). Same frame both times, deliberately — the
+   whole argument of the segment is that these are two views of one
+   thing.
 
-   CONSTRUCTED, not real student data — same rule as the Activity 5
-   excerpt. Say so on the day. */
-.doc {
-  background: var(--bg-raised);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+   Sized in container-query units against .ptframe, exactly the way
+   the real PaperTrail promo pages are, so the mock keeps its
+   proportions at any projector resolution instead of being tuned to
+   one screen.
+
+   Colours and section structure taken from the real Inspect UI
+   (promo/overall/04a-ladder-inspect.html). Fonts are NOT the real
+   ones: the promos pull Lora and DM Sans off Google Fonts at runtime
+   and school wifi is exactly where that fails, so this uses the
+   nearest system stacks. Same reason the QR is a committed SVG.
+
+   Every document shown is CONSTRUCTED. Say so on the day. */
+
+.ptframe {
+  container-type: size;
+  width: 100%;
+  height: 58vh;
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.5);
+  display: flex;
+  background: #fff;
   text-align: left;
+  --pt-blue:  #4A6FA5;
+  --pt-dk:    #3d5d8a;
+  --pt-gold:  #C9A84C;
+  --pt-teal:  #2a7a6b;
+  --pt-red:   #ea4335;
+  --pt-org:   #f29900;
+  --pt-ink:   #1a2235;
+  --pt-ink2:  #202124;
+  --pt-mist:  #80868b;
+  --pt-rule:  #e8eaed;
 }
-.doc__bar {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  padding: var(--s-3) var(--s-4);
-  background: var(--bg-input);
-  border-bottom: 1px solid var(--line);
-  font-size: var(--t-sm);
-}
-.doc__name { font-weight: 650; }
-.doc__bar .spacer { flex: 1; }
 
-.doc__meta {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid var(--line);
-}
-.doc__meta > div {
-  padding: var(--s-3) var(--s-4);
-  border-right: 1px solid var(--line);
-}
-.doc__meta > div:last-child { border-right: 0; }
-.doc__meta b {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--t-lg);
-  font-weight: 650;
-  line-height: 1.1;
-}
-.doc__meta span { font-size: var(--t-xs); color: var(--ink-faint); }
-
-/* Activity strip. Each <i> is one slice of the session; height is
-   how much was written in it. This is the shape teachers read as
-   "someone sat and worked". */
-.timeline {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 8vh;
-  padding: var(--s-4);
-  border-bottom: 1px solid var(--line);
-}
-.timeline i {
+/* --- the document half --- */
+.ptdoc {
   flex: 1;
-  background: var(--accent);
-  border-radius: 2px 2px 0 0;
-  min-height: 2px;
-  opacity: .85;
+  padding: 4cqh 3.5cqw;
+  overflow: hidden;
+  background: #fff;
+  color: #3a4657;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2.6cqh;
+  line-height: 1.6;
 }
-.timeline i[data-kind="gap"]   { background: var(--line-strong); opacity: .6; }
-.timeline i[data-kind="paste"] { background: var(--accent-hot); opacity: 1; }
+.ptdoc h4 {
+  font-family: Georgia, "Iowan Old Style", serif;
+  font-weight: 700;
+  font-size: 3.8cqh;
+  color: var(--pt-ink);
+  margin: 0 0 .6cqh;
+  line-height: 1.2;
+}
+.ptdoc .byline { font-size: 2.1cqh; color: #70757a; margin-bottom: 3cqh; }
+.ptdoc p { margin: 0 0 1.6cqh; }
+.ptdoc .caret {
+  display: inline-block; width: .12em; height: 1.05em;
+  background: var(--pt-ink); vertical-align: text-bottom;
+  animation: pt-blink 1.06s steps(1) infinite;
+}
+@keyframes pt-blink { 50% { opacity: 0; } }
 
-.evt { padding: var(--s-2) 0; }
-.evt > div {
-  display: grid;
-  grid-template-columns: 7ch 1fr auto;
-  gap: var(--s-3);
-  align-items: baseline;
-  padding: var(--s-2) var(--s-4);
-  font-size: var(--t-sm);
-  border-bottom: 1px solid rgba(43,52,65,.5);
+/* --- the sidebar half --- */
+.ptside {
+  width: 34cqw;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: -2px 0 14px rgba(0,0,0,.16);
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--pt-ink2);
 }
-.evt > div:last-child { border-bottom: 0; }
-.evt time { font-family: var(--font-mono); color: var(--ink-faint); }
-.evt .amt { font-family: var(--font-mono); color: var(--ink-dim); }
-.evt > div[data-kind="paste"] { background: rgba(255,92,92,.09); }
-.evt > div[data-kind="paste"] .amt { color: var(--accent-hot); }
+.ptside__hd {
+  display: flex; align-items: center; gap: 1.4cqh;
+  padding: 2.2cqh 2.4cqh;
+  background: var(--pt-blue);
+  border-bottom: 1px solid var(--pt-dk);
+  flex-shrink: 0;
+}
+.ptside__hd .wm { font-weight: 700; font-size: 2.7cqh; color: #fff; line-height: 1.15; }
+.ptside__hd .wm em { color: var(--pt-gold); font-style: italic; }
+.ptside__hd .sub { font-size: 1.95cqh; color: rgba(255,255,255,.75); }
+.ptside__hd .ico {
+  width: 4.2cqh; height: 4.2cqh; flex-shrink: 0; border-radius: 3px;
+  background: #f7f8fa; position: relative;
+}
+.ptside__hd .ico::after {
+  content: ""; position: absolute; inset: 26% 22% auto 22%; height: 8%;
+  background: #a7b6cd; box-shadow: 0 180% 0 #a7b6cd;
+}
+.ptside__body { padding: 0 2.2cqh 2cqh; overflow: hidden; }
 
-.chip {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 99px;
-  font-size: var(--t-xs);
-  font-family: var(--font-mono);
-  border: 1px solid currentColor;
+.ptbtn {
+  width: 100%; border: 0; border-radius: 5px; color: #fff;
+  font-family: inherit; font-size: 2.4cqh; font-weight: 700;
+  padding: 1.7cqh; margin-top: 2cqh;
+  display: flex; align-items: center; justify-content: center; gap: 1cqh;
 }
-.chip--ok   { color: var(--accent-cool); }
-.chip--warn { color: var(--accent-warm); }
-.chip--hot  { color: var(--accent-hot); }
+.ptbtn--blue { background: var(--pt-blue); }
+.ptbtn--gold { background: var(--pt-gold); }
+
+.ptsec { border-top: 1px solid var(--pt-rule); padding: 2cqh 0; }
+.ptsec__t {
+  display: flex; align-items: center; gap: 1cqh;
+  font-size: 2.4cqh; font-weight: 700; color: var(--pt-ink2);
+}
+.ptsec__t .chev { margin-left: auto; color: #9aa0a6; font-size: 2cqh; }
+.ptbadge {
+  background: var(--pt-red); color: #fff; border-radius: 99px;
+  padding: .2cqh 1.7cqh; font-size: 2cqh; font-weight: 700;
+}
+.ptbadge--o    { background: var(--pt-org); }
+.ptbadge--zero { background: var(--pt-teal); }
+.ptrow {
+  font-size: 2.15cqh; color: #3a4657; padding: 1.1cqh 0;
+  border-top: 1px solid #f1f3f5; line-height: 1.45;
+}
+.ptrow:first-child { border-top: 0; margin-top: 1.2cqh; }
+.ptrow b { color: var(--pt-ink2); }
+
+/* The real Inspect timeline: one horizontal bar, blue for revision,
+   red for paste, grey for a gap. Not a bar chart. */
+.pttl {
+  height: 4cqh; background: #eee; border-radius: 99px;
+  overflow: hidden; display: flex; margin-top: 1.6cqh;
+}
+.pttl span { height: 100%; }
+.pttl .b { background: var(--pt-blue); }
+.pttl .r { background: var(--pt-red); }
+.pttl .g { background: #e3e6ea; }
+.ptlegend {
+  display: flex; gap: 1.8cqh; flex-wrap: wrap;
+  font-size: 1.7cqh; color: #9aa0a6; margin-top: 1cqh;
+}
+.ptlegend b  { color: var(--pt-blue); }
+.ptlegend .rd { color: var(--pt-red); }
+.ptlegend .og { color: var(--pt-org); }
 
 /* Beats that occupy the SAME space instead of stacking down the page.
    Everything inside sits in one grid cell, so the container is as tall
@@ -412,5 +465,5 @@ textarea.input { min-height: 5.5rem; resize: vertical; }
    layout. Needed wherever a slide shows two big things in turn — the
    screen page is overflow:hidden, so anything that doesn't fit is
    silently clipped rather than scrolling. */
-.stack { display: grid; align-items: start; }
-.stack > * { grid-area: 1 / 1; }
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.stack > * { grid-area: 1 / 1; min-width: 0; }

@@ -1,122 +1,165 @@
 <!-- SEGMENT 3 · Can a revision history be faked? · ~4 min
      Interaction: i2-fake-history (yes/no, HOLD)
 
-     Job of this slide: make the room trust revision history BEFORE
+     Job of this slide: make the room TRUST revision history before
      they vote. Everything here is the case FOR it — what it shows,
-     how well it shows it, how obvious a paste looks. The vote then
-     asks whether it can be faked, and the autotyper answers.
+     how well, how obvious a paste is. The vote then asks whether it
+     can be faked, and the autotyper answers.
 
-     Beat 0 opens by quoting the people in segment 2 who wrote
-     "revision history". If nobody did, the quotes are simply absent
-     and the data-echo-if-empty line covers it — no failure state.
+     Beat 0 quotes the people in segment 2 who said "revision
+     history". Nobody says it → the quotes are absent and the
+     data-echo-if-empty line covers the slide. No failure state.
 
-     The document below is CONSTRUCTED. Say so on the day. -->
+     Beats swap inside .stack — the screen page is overflow:hidden, so
+     two full panels would silently clip rather than scroll.
+
+     Both documents are CONSTRUCTED. The sidebar is modelled on the
+     real PaperTrail Inspect UI. Say both out loud. -->
 
 <div class="slide wide">
 
   <h1 class="center" data-until="2">You already have a tool for this.</h1>
 
-  <!-- Beats 0-2 swap in the same space. Two inspection panels cannot
-       share the screen, and the screen page clips rather than scrolls. -->
   <div class="stack" style="margin-top:var(--s-5)">
 
-  <div data-until="0">
-    <div data-echo="i1-slop-wall"
-         data-echo-match="revision|version history|edit history|google doc"
-         data-echo-max="3"
-         style="max-width:70ch;margin:0 auto"></div>
+    <!-- BEAT 0 — the room's own words -->
+    <div data-until="0">
+      <div data-echo="i1-slop-wall"
+           data-echo-match="revision|version history|edit history|google doc"
+           data-echo-max="3"
+           style="max-width:70ch;margin:0 auto"></div>
 
-    <p data-echo-if-empty class="center muted" style="max-width:60ch;margin:0 auto">
-      Revision history is the answer I hear most often — and it is a good answer.
-    </p>
-  </div>
-
-  <!-- BEAT 1 — what it actually shows -->
-  <div data-step="1" data-until="1">
-
-    <div class="doc">
-      <div class="doc__bar">
-        <span class="doc__name">Friar Laurence — body paragraph</span>
-        <span class="faint mono">·  reconstruction</span>
-        <span class="spacer"></span>
-        <span class="chip chip--ok">consistent with human composition</span>
-      </div>
-
-      <div class="doc__meta">
-        <div><b>47 min</b><span>time in document</span></div>
-        <div><b>3</b><span>writing sessions</span></div>
-        <div><b>214</b><span>revisions</span></div>
-        <div><b>0</b><span>bulk insertions</span></div>
-      </div>
-
-      <div class="timeline" aria-hidden="true">
-        <i style="height:22%"></i><i style="height:48%"></i><i style="height:61%"></i>
-        <i style="height:39%"></i><i data-kind="gap" style="height:6%"></i>
-        <i data-kind="gap" style="height:4%"></i><i style="height:34%"></i>
-        <i style="height:72%"></i><i style="height:55%"></i><i style="height:29%"></i>
-        <i data-kind="gap" style="height:5%"></i><i style="height:44%"></i>
-        <i style="height:83%"></i><i style="height:37%"></i><i style="height:18%"></i>
-      </div>
-
-      <div class="evt">
-        <div><time>19:04</time><span>typing — opening sentence, rewritten twice</span><span class="amt">+186</span></div>
-        <div><time>19:11</time><span>deleted a sentence, retyped it</span><span class="amt">−94 / +120</span></div>
-        <div><time>19:19</time><span>idle</span><span class="amt">6 min</span></div>
-        <div><time>19:25</time><span>typing — evidence and commentary</span><span class="amt">+410</span></div>
-        <div><time>19:38</time><span>typing — conclusion, then edits throughout</span><span class="amt">+233</span></div>
-      </div>
+      <p data-echo-if-empty class="center muted" style="max-width:60ch;margin:0 auto">
+        Revision history is the answer I hear most often — and it is a good answer.
+      </p>
     </div>
 
-    <p class="center muted" style="margin-top:var(--s-4)">
-      Hesitation. Deletions. Gaps. This is what writing looks like from the outside.
-    </p>
-  </div>
+    <!-- BEAT 1 — a genuine draft, inspected -->
+    <div data-step="1" data-until="1">
+      <div class="ptframe">
+        <div class="ptdoc">
+          <h4>The Weight of Inaction: Friar Laurence's Silence</h4>
+          <div class="byline">English 10 · Draft 2 — reconstruction</div>
+          <p>Friar Laurence is the only adult in the play who knows everything, and at
+             every turn he conceals rather than intervenes.</p>
+          <p>His knowledge and authority make him complicit in a way the feuding families
+             are not: they act out of ignorance, he acts out of calculation.</p>
+          <p>By the time he arrives at the tomb, the secret he kept has already done the work
+             the poison only finishes.</p>
+        </div>
 
-  <!-- BEAT 2 — and the thing everybody looks for -->
-  <div data-step="2" data-until="2">
+        <div class="ptside">
+          <div class="ptside__hd">
+            <div class="ico"></div>
+            <div>
+              <div class="wm">PaperTrail&trade; <em>Inspect</em></div>
+              <div class="sub">Revision analysis</div>
+            </div>
+          </div>
+          <div class="ptside__body">
+            <button class="ptbtn ptbtn--blue">▶ Open Playback Window</button>
 
-    <div class="doc">
-      <div class="doc__bar">
-        <span class="doc__name">Same assignment — a different student</span>
-        <span class="spacer"></span>
-        <span class="chip chip--hot">1 bulk insertion</span>
+            <div class="ptsec">
+              <div class="ptsec__t">📈 Revision Timeline</div>
+              <div class="pttl">
+                <span class="b" style="width:34%"></span><span class="g" style="width:9%"></span>
+                <span class="b" style="width:28%"></span><span class="g" style="width:6%"></span>
+                <span class="b" style="width:23%"></span>
+              </div>
+              <div class="ptlegend"><span><b>●</b> revision</span><span class="rd">● paste</span><span class="og">⚡ struggle</span></div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">📋 Paste Events <span class="ptbadge ptbadge--zero">0</span><span class="chev">▼</span></div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">🕐 Writing Sessions<span class="chev">▼</span></div>
+              <div class="ptrow">Mon 7:04–7:31pm · 27 min</div>
+              <div class="ptrow">Wed 6:40–7:00pm · 20 min</div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">⚡ Struggle Moments <span class="ptbadge ptbadge--o">1</span><span class="chev">▼</span></div>
+              <div class="ptrow"><b>Paragraph 2</b> — 6 min pause, 3 deletions before final phrasing.</div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">📊 Activity Report<span class="chev">▼</span></div>
+              <div class="ptrow"><b>Deletion ratio:</b> 34% &nbsp;·&nbsp; <b>214</b> revisions</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="doc__meta">
-        <div><b>4 min</b><span>time in document</span></div>
-        <div><b>1</b><span>writing session</span></div>
-        <div><b>6</b><span>revisions</span></div>
-        <div><b>1</b><span>bulk insertion</span></div>
-      </div>
-
-      <div class="timeline" aria-hidden="true">
-        <i style="height:5%"></i><i data-kind="paste" style="height:100%"></i>
-        <i style="height:8%"></i><i style="height:6%"></i><i style="height:4%"></i>
-        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
-        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
-        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
-        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
-        <i data-kind="gap" style="height:3%"></i><i data-kind="gap" style="height:3%"></i>
-      </div>
-
-      <div class="evt">
-        <div><time>23:47</time><span>typing — the title</span><span class="amt">+38</span></div>
-        <div data-kind="paste"><time>23:48</time><span>pasted — the entire paragraph, at once</span><span class="amt">+1,247</span></div>
-        <div><time>23:50</time><span>changed two words</span><span class="amt">+11 / −9</span></div>
-      </div>
+      <p class="center muted" style="margin-top:var(--s-4)">
+        Hesitation. Deletions. A six-minute pause. This is what writing looks like from the outside.
+      </p>
     </div>
 
-    <p class="center lead" style="margin-top:var(--s-4)">
-      That is the one everyone catches.
-    </p>
-  </div>
+    <!-- BEAT 2 — the one everybody catches -->
+    <div data-step="2" data-until="2">
+      <div class="ptframe">
+        <div class="ptdoc">
+          <h4>The Weight of Inaction: Friar Laurence's Silence</h4>
+          <div class="byline">English 10 · same assignment, a different student</div>
+          <p>Friar Laurence is the only adult in the play who knows everything, and at
+             every turn he conceals rather than intervenes.</p>
+          <p>His knowledge and authority make him complicit in a way the feuding families
+             are not: they act out of ignorance, he acts out of calculation.</p>
+        </div>
 
-  <!-- BEAT 3 — everything else clears. The question stands alone,
-       which is both the stronger beat and the only way it is
-       guaranteed to fit on a short screen. -->
-  <div data-step="3" class="center" style="align-self:center">
-    <p class="lead" style="font-size:var(--t-2xl);margin:0">So: is this enough?</p>
-  </div>
+        <div class="ptside">
+          <div class="ptside__hd">
+            <div class="ico"></div>
+            <div>
+              <div class="wm">PaperTrail&trade; <em>Inspect</em></div>
+              <div class="sub">Revision analysis</div>
+            </div>
+          </div>
+          <div class="ptside__body">
+            <button class="ptbtn ptbtn--blue">▶ Open Playback Window</button>
+
+            <div class="ptsec">
+              <div class="ptsec__t">📈 Revision Timeline</div>
+              <div class="pttl">
+                <span class="b" style="width:6%"></span><span class="r" style="width:34%"></span>
+                <span class="g" style="width:52%"></span><span class="b" style="width:8%"></span>
+              </div>
+              <div class="ptlegend"><span><b>●</b> revision</span><span class="rd">● paste</span><span class="og">⚡ struggle</span></div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">📋 Paste Events <span class="ptbadge">1</span><span class="chev">▼</span></div>
+              <div class="ptrow"><b>Paste #1</b> — 1,247 characters in one second · 4% overlap with prior text</div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">🕐 Writing Sessions<span class="chev">▼</span></div>
+              <div class="ptrow">Sun 11:47–11:51pm · 4 min</div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">⚡ Struggle Moments <span class="ptbadge ptbadge--zero">0</span><span class="chev">▼</span></div>
+            </div>
+
+            <div class="ptsec">
+              <div class="ptsec__t">📊 Activity Report<span class="chev">▼</span></div>
+              <div class="ptrow"><b>Deletion ratio:</b> 1% &nbsp;·&nbsp; <b>6</b> revisions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="center lead" style="margin-top:var(--s-4)">
+        That is the one everybody catches.
+      </p>
+    </div>
+
+    <!-- BEAT 3 — screen clears; the question stands alone -->
+    <div data-step="3" class="center" style="align-self:center">
+      <p class="lead" style="font-size:var(--t-2xl);margin:0">So: is this enough?</p>
+    </div>
 
   </div><!-- /.stack -->
 
