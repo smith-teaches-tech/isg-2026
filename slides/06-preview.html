@@ -1,0 +1,159 @@
+<!-- SEGMENT 6 · THE SOLUTION, PREVIEWED · ~2 min · NO interaction (Michael's call)
+
+     The answer to the dilemma seg 5 ended on. The move is NOT to lock writing
+     down — it's to make AI impossible to HIDE, by building a baseline of
+     writing you KNOW is authentic (in-class, supervised) and comparing
+     everything else against it. Steep, clear consequence: 0%, no redo. That's
+     how at-home writing comes back.
+
+     The corpus/baseline is the intellectual core (Michael emphasised it): the
+     mechanics get built out later (seg 18); here it's the promise. Ends on a
+     tease — "but does it actually work?" — that hands to seg 7 (the Turnitin
+     data: 0% of 28 pre-AI 2022 papers flagged; 43/43 known-authentic cleared).
+
+     Beats (one .stack, swap in place — screen is overflow:hidden):
+       0  thesis — stop keeping AI out; make it impossible to hide
+       1  everything to Turnitin — in-class AND at-home (build-and-hold)
+       2  the baseline — in-class = KNOWN authentic (build-and-hold)
+       3  the comparison — unknown measured against known; AI stands out
+       4  consequence — flagged? 0%. no redo.
+       5  payoff + tease → seg 7
+
+     Build-and-hold: keyframes scoped to [aria-hidden="false"], iteration 1 +
+     fill both, so each visual assembles once and holds while Michael talks and
+     re-triggers cleanly on each visit. Pure CSS, no script. NOTE the seg-5
+     lesson: ch max-widths go on the HEADINGS (own big font), never a wrapper. -->
+
+<div class="slide wide s6">
+
+  <style>
+  /* shared entrances (build-and-hold) */
+  @keyframes s6L    { from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:none} }
+  @keyframes s6R    { from{opacity:0;transform:translateX(40px)}  to{opacity:1;transform:none} }
+  @keyframes s6pop  { from{opacity:0;transform:scale(.9)}         to{opacity:1;transform:none} }
+  @keyframes s6fade { from{opacity:0;transform:translateY(8px)}   to{opacity:1;transform:none} }
+
+  /* beat 0 · thesis */
+  .s6-titlewrap[aria-hidden="false"] h1        { animation:s6fade .7s var(--ease) both; }
+  .s6-titlewrap[aria-hidden="false"] .s6-kick  { animation:s6fade .5s var(--ease) .1s both; }
+
+  /* beat 1 · everything to Turnitin */
+  .s6-flow .flow-src   { display:flex; gap:var(--s-5); justify-content:center; }
+  .s6-flow .src        { padding:var(--s-3) var(--s-5); border-radius:var(--radius);
+                         border:1px solid var(--line-strong); background:var(--bg-raised);
+                         font-weight:600; font-size:var(--t-lg); }
+  .s6-flow .src-in     { border-color:var(--accent-cool); color:var(--accent-cool); }
+  .s6-flow .src-home   { border-color:var(--accent);      color:var(--accent); }
+  .s6-flow .flow-arrow { font-size:var(--t-2xl); color:var(--ink-faint); margin:var(--s-2) 0; line-height:1; }
+  .s6-flow .flow-box   { display:inline-block; padding:var(--s-4) var(--s-7); border-radius:var(--radius);
+                         background:var(--bg-input); border:2px solid var(--line-strong);
+                         font-weight:800; font-size:var(--t-xl); }
+  .s6-flow[aria-hidden="false"] .src-in     { animation:s6L .6s var(--ease) both; }
+  .s6-flow[aria-hidden="false"] .src-home   { animation:s6R .6s var(--ease) both; }
+  .s6-flow[aria-hidden="false"] .flow-arrow { animation:s6fade .5s var(--ease) .6s both; }
+  .s6-flow[aria-hidden="false"] .flow-box   { animation:s6pop  .5s var(--ease) .9s both; }
+  .s6-flow[aria-hidden="false"] .flow-cap   { animation:s6fade .5s var(--ease) 1.3s both; }
+
+  /* beat 2 · the baseline */
+  .s6-base .base-panel { width:min(80vw,760px); margin:0 auto; padding:var(--s-6);
+                         border-radius:var(--radius); background:rgba(53,214,164,.08);
+                         border:2px solid var(--accent-cool); }
+  .s6-base .base-tag   { font-family:var(--font-mono); letter-spacing:.08em;
+                         color:var(--accent-cool); font-weight:700; font-size:var(--t-xl); }
+  .s6-base .base-sub   { color:var(--ink-dim); font-size:var(--t-lg); margin-top:var(--s-3); }
+  .s6-base[aria-hidden="false"] .base-panel { animation:s6pop  .6s var(--ease) both; }
+  .s6-base[aria-hidden="false"] .lead       { animation:s6fade .5s var(--ease) .7s both; }
+
+  /* beat 3 · the comparison */
+  .s6-cmp .cmp-row     { display:flex; align-items:center; justify-content:center;
+                         gap:var(--s-5); width:min(92vw,980px); margin:0 auto; }
+  .s6-cmp .cmp-card    { flex:1; max-width:34%; padding:var(--s-5); border-radius:var(--radius);
+                         background:var(--bg-raised); border:1px solid var(--line); }
+  .s6-cmp .cmp-known   { border:2px solid var(--accent-cool); background:rgba(53,214,164,.08); }
+  .s6-cmp .cmp-unknown { border:2px dashed var(--line-strong); }
+  .s6-cmp .cmp-h       { font-weight:700; font-size:var(--t-lg); }
+  .s6-cmp .cmp-known .cmp-h { color:var(--accent-cool); }
+  .s6-cmp .cmp-s       { color:var(--ink-dim); font-size:var(--t-base); margin-top:var(--s-2); }
+  .s6-cmp .cmp-vs      { color:var(--ink-faint); font-family:var(--font-mono);
+                         font-size:var(--t-sm); flex-shrink:0; }
+  .s6-cmp[aria-hidden="false"] .cmp-known   { animation:s6L .6s var(--ease) both; }
+  .s6-cmp[aria-hidden="false"] .cmp-unknown { animation:s6R .6s var(--ease) both; }
+  .s6-cmp[aria-hidden="false"] .cmp-vs      { animation:s6fade .5s var(--ease) .5s both; }
+  .s6-cmp[aria-hidden="false"] .cmp-tag     { animation:s6fade .5s var(--ease) 1.1s both; }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — thesis -->
+    <div data-until="0" class="s6-titlewrap center" style="align-self:center">
+      <span class="s6-kick pill" style="display:inline-block;margin-bottom:var(--s-5)">the solution, previewed</span>
+      <h1 style="max-width:18ch;margin:0 auto;line-height:1.15">
+        Stop keeping AI <span style="color:var(--accent-hot)">out</span>.<br>
+        Make it impossible to <span style="color:var(--accent-cool)">hide</span>.
+      </h1>
+    </div>
+
+    <!-- BEAT 1 — everything to Turnitin -->
+    <div data-step="1" data-until="1" class="s6-flow center" style="align-self:center;width:100%">
+      <h2 class="muted" style="margin-bottom:var(--s-6);max-width:30ch;margin-left:auto;margin-right:auto">
+        Every piece of writing goes to one place.
+      </h2>
+      <div class="flow-src">
+        <span class="src src-in">In-class writing</span>
+        <span class="src src-home">At-home writing</span>
+      </div>
+      <div class="flow-arrow">&darr;</div>
+      <div class="flow-box">Turnitin</div>
+      <p class="flow-cap faint" style="margin-top:var(--s-5)">The timed paragraph and the essay done at home &mdash; all of it.</p>
+    </div>
+
+    <!-- BEAT 2 — the baseline -->
+    <div data-step="2" data-until="2" class="s6-base center" style="align-self:center;width:100%">
+      <h2 class="muted" style="margin-bottom:var(--s-6);max-width:34ch;margin-left:auto;margin-right:auto">
+        The writing they do in front of you changes everything.
+      </h2>
+      <div class="base-panel">
+        <div class="base-tag">KNOWN AUTHENTIC</div>
+        <div class="base-sub">in-class, supervised &mdash; the student&rsquo;s real voice, on record</div>
+      </div>
+      <p class="lead" style="font-size:var(--t-xl);margin-top:var(--s-6)">That&rsquo;s your <b style="color:var(--accent-cool)">baseline</b>.</p>
+    </div>
+
+    <!-- BEAT 3 — the comparison -->
+    <div data-step="3" data-until="3" class="s6-cmp center" style="align-self:center;width:100%">
+      <h2 class="muted" style="margin-bottom:var(--s-6);max-width:36ch;margin-left:auto;margin-right:auto">
+        Now every paper has something to be measured against.
+      </h2>
+      <div class="cmp-row">
+        <div class="cmp-card cmp-known"><div class="cmp-h">Known authentic</div><div class="cmp-s">their baseline</div></div>
+        <div class="cmp-vs">compared to</div>
+        <div class="cmp-card cmp-unknown"><div class="cmp-h">An at-home paper</div><div class="cmp-s">can&rsquo;t know for sure</div></div>
+      </div>
+      <p class="cmp-tag" style="margin-top:var(--s-6);font-size:var(--t-xl);color:var(--accent-hot);font-weight:700">
+        Writing that isn&rsquo;t theirs stands out.
+      </p>
+    </div>
+
+    <!-- BEAT 4 — the consequence -->
+    <div data-step="4" data-until="4" class="center" style="align-self:center;width:100%">
+      <p class="muted" style="font-size:var(--t-lg);margin-bottom:var(--s-4)">And the rule is simple:</p>
+      <h1 style="font-size:var(--t-3xl);margin:0 auto;color:var(--accent-hot)">Flagged? 0%. No redo.</h1>
+      <p class="faint" style="max-width:46ch;margin:var(--s-6) auto 0">
+        No debate, no plausible deniability &mdash; you&rsquo;re holding their own baseline.
+      </p>
+    </div>
+
+    <!-- BEAT 5 — payoff + tease → seg 7 -->
+    <div data-step="5" class="center" style="align-self:center;width:100%">
+      <h1 style="max-width:20ch;margin:0 auto;line-height:1.2">
+        That&rsquo;s how at-home writing <span style="color:var(--accent-cool)">comes back</span>.
+      </h1>
+      <p class="lead" style="font-size:var(--t-xl);max-width:32ch;margin:var(--s-5) auto 0">
+        Enough writing <i>and</i> real writing &mdash; you stop having to choose.
+      </p>
+      <p class="faint" style="margin-top:var(--s-6)">But does it actually work? That&rsquo;s the next question. &rarr;</p>
+    </div>
+
+  </div><!-- /.stack -->
+
+</div>
