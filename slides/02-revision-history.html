@@ -39,32 +39,116 @@
 
   /* ---------- BEAT 1 · PLAYBACK ------------------------------ */
 
-  /* the document writes itself in: a top-down reveal, with a thin
-     "playback head" sweeping down the page as it fills */
-  .s2-pb-reveal { position: relative; }
-  .s2-pb-head {
-    position: absolute; left: -2%; right: -2%; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--pt-blue), transparent);
-    box-shadow: 0 0 10px var(--pt-blue); opacity: 0; top: 0;
+  /* ---------- BEAT 1 · PLAYBACK (typewriter replay) ---------
+     The genuine draft TYPES ITSELF IN, line by line, left-to-right,
+     with a caret riding the writing edge and a couple of backspace
+     corrections — a revision replay, not a top-down reveal. Each line
+     is a nowrap block whose width animates 0 -> its own --w (in ch);
+     overflow:hidden clips the not-yet-typed tail. One 11s cycle types
+     the whole draft (~0-60%), holds, erases, loops. Scoped to
+     [aria-hidden="false"] so it restarts cleanly on each visit. */
+  .s2-type .tl {
+    display:block; white-space:nowrap; overflow:hidden;
+    width:0; max-width:100%;
+    border-right:.16em solid transparent;  /* the caret */
+    --cc: var(--pt-ink);
   }
-  .s2-playback[aria-hidden="false"] .s2-pb-reveal {
-    animation: s2pbReveal 11s ease-in-out infinite;
+  .s2-type .tl.pp { margin-top:1.6cqh; }   /* paragraph break */
+  .s2-playback[aria-hidden="false"] .s2-type .tl {
+    animation-duration:11s; animation-timing-function:linear; animation-iteration-count:infinite;
   }
-  .s2-playback[aria-hidden="false"] .s2-pb-head {
-    animation: s2pbHead 11s ease-in-out infinite;
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(1) { animation-name:s2type0; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(2) { animation-name:s2type1; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(3) { animation-name:s2type2; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(4) { animation-name:s2type3; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(5) { animation-name:s2type4; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(6) { animation-name:s2type5; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(7) { animation-name:s2type6; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(8) { animation-name:s2type7; }
+  .s2-playback[aria-hidden="false"] .s2-type .tl:nth-child(9) { animation-name:s2type8; }
+
+  @keyframes s2type0 {
+    0%,2.0% { width:0; border-color:transparent; }
+    2.2% { border-color:var(--cc); }
+    7.5% { width:var(--w); }
+    8.6% { width:var(--w); border-color:var(--cc); }
+    8.8% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
   }
-  @keyframes s2pbReveal {
-    0%,7%  { clip-path: inset(0 0 100% 0); }
-    68%    { clip-path: inset(0 0 0 0); }
-    93%    { clip-path: inset(0 0 0 0); }
-    100%   { clip-path: inset(0 0 100% 0); }
+  @keyframes s2type1 {
+    0%,8.6% { width:0; border-color:transparent; }
+    8.8% { border-color:var(--cc); }
+    11.35% { width:calc(var(--w)*0.80); }
+    12.34% { width:calc(var(--w)*0.62); }
+    14.1% { width:var(--w); }
+    15.2% { width:var(--w); border-color:var(--cc); }
+    15.4% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
   }
-  @keyframes s2pbHead {
-    0%,6%  { top: 0; opacity: 0; }
-    8%     { opacity: 1; }
-    66%    { top: 100%; opacity: 1; }
-    70%    { opacity: 0; }
-    100%   { opacity: 0; }
+  @keyframes s2type2 {
+    0%,15.2% { width:0; border-color:transparent; }
+    15.4% { border-color:var(--cc); }
+    20.7% { width:var(--w); }
+    21.8% { width:var(--w); border-color:var(--cc); }
+    22.0% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type3 {
+    0%,21.8% { width:0; border-color:transparent; }
+    22.0% { border-color:var(--cc); }
+    27.3% { width:var(--w); }
+    28.4% { width:var(--w); border-color:var(--cc); }
+    28.6% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type4 {
+    0%,28.4% { width:0; border-color:transparent; }
+    28.6% { border-color:var(--cc); }
+    33.9% { width:var(--w); }
+    35.0% { width:var(--w); border-color:var(--cc); }
+    35.2% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type5 {
+    0%,35.0% { width:0; border-color:transparent; }
+    35.2% { border-color:var(--cc); }
+    40.5% { width:var(--w); }
+    41.6% { width:var(--w); border-color:var(--cc); }
+    41.8% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type6 {
+    0%,41.6% { width:0; border-color:transparent; }
+    41.8% { border-color:var(--cc); }
+    44.35% { width:calc(var(--w)*0.80); }
+    45.34% { width:calc(var(--w)*0.62); }
+    47.1% { width:var(--w); }
+    48.2% { width:var(--w); border-color:var(--cc); }
+    48.4% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type7 {
+    0%,48.2% { width:0; border-color:transparent; }
+    48.4% { border-color:var(--cc); }
+    53.7% { width:var(--w); }
+    54.8% { width:var(--w); border-color:var(--cc); }
+    55.0% { border-color:transparent; }
+    88.0% { width:var(--w); }
+    90.0%,100% { width:0; border-color:transparent; }
+  }
+  @keyframes s2type8 {
+    0%,54.8% { width:0; border-color:transparent; }
+    55.0% { border-color:var(--cc); }
+    60.3% { width:var(--w); }
+    88.0% { width:var(--w); border-color:var(--cc); }
+    90.0%,100% { width:0; border-color:transparent; }
   }
 
   /* the "Open Playback Window" button flashes as if clicked, then
@@ -189,14 +273,16 @@
         <div class="ptdoc">
           <h4>The Weight of Inaction: Friar Laurence's Silence</h4>
           <div class="byline">English 10 · Draft 2 — reconstruction</div>
-          <div class="s2-pb-reveal">
-            <div class="s2-pb-head"></div>
-            <p>Friar Laurence is the only adult in the play who knows everything, and at
-               every turn he conceals rather than intervenes.</p>
-            <p>His knowledge and authority make him complicit in a way the feuding families
-               are not: they act out of ignorance, he acts out of calculation.</p>
-            <p>By the time he arrives at the tomb, the secret he kept has already done the work
-               the poison only finishes.</p>
+<div class="s2-type">
+            <span class="tl" style="--w:48ch">Friar Laurence is the only adult in the play who</span>
+            <span class="tl" style="--w:47ch">knows everything, and at every turn he conceals</span>
+            <span class="tl" style="--w:23ch">rather than intervenes.</span>
+            <span class="tl pp" style="--w:46ch">His knowledge and authority make him complicit</span>
+            <span class="tl" style="--w:47ch">in a way the feuding families are not: they act</span>
+            <span class="tl" style="--w:45ch">out of ignorance, he acts out of calculation.</span>
+            <span class="tl pp" style="--w:49ch">By the time he arrives at the tomb, the secret he</span>
+            <span class="tl" style="--w:46ch">kept has already done the work the poison only</span>
+            <span class="tl" style="--w:9ch">finishes.</span>
           </div>
         </div>
 
