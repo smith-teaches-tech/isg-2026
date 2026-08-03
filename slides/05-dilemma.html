@@ -1,0 +1,177 @@
+<!-- SEGMENT 5 · THE DILEMMA · ~2 min · NO new interaction (live echo of seg 1)
+
+     The hinge. It collides the two things the room just watched us prove:
+       Seg 4 → students must write ~4x what a teacher can grade, and that
+               volume HAS to go home.
+       Seg 3 → writing done with AI isn't thinking; it's cognitive debt.
+     Home is where AI lives — so both instinctive defences the room named
+     on the seg-1 slop wall are now dead: "check the revision history"
+     (faked, seg 2) and "only let them write in class" (can't hold enough
+     writing, seg 4).
+
+     The sharpened trap (Michael): retreating to in-class-only feels safe
+     but silently caps writing to what fits a period — so to protect
+     students from AI, we've quietly stopped teaching them to write enough
+     to become writers. THE DILEMMA DOES NOT RESOLVE HERE (that's seg 6).
+     It ends on the question.
+
+     Beats (one .stack, swap in place — screen is overflow:hidden):
+       0  title card — "The dilemma"
+       1  the collision — two forces crushing HOME (build-and-hold)
+       2  your own words — LIVE echo of the seg-1 slop wall (data-echo)
+       3  the strike — the two defences named, struck through, verdicts
+       4  the trap — the safe retreat named as a surrender
+       5  the question, held → hands off to seg 6
+
+     MOVING-BEAT PATTERN: every keyframe is scoped to [aria-hidden="false"]
+     (the attribute applySteps sets on the visible beat), build-and-hold
+     form (iteration 1 + fill both) so it assembles once and holds while
+     Michael talks, and re-triggers cleanly on each visit. Pure CSS, no
+     script, no runtime deps. -->
+
+<div class="slide wide s5">
+
+  <style>
+  /* ---- beat 0 · title ------------------------------------- */
+  .s5 .s5-titlewrap[aria-hidden="false"] .s5-big  { animation:s5rise .8s var(--ease) both; }
+  .s5 .s5-titlewrap[aria-hidden="false"] .s5-kick { animation:s5vfade .6s var(--ease) .1s both; }
+  .s5-big { font-size:var(--t-3xl); line-height:1; margin:0; font-weight:750; }
+  @keyframes s5rise  { from{opacity:0;transform:translateY(16px);letter-spacing:.22em}
+                       to  {opacity:1;transform:none;letter-spacing:0} }
+
+  /* ---- beat 1 · the collision ----------------------------- */
+  .s5-crush .crush-row { display:flex; align-items:stretch; justify-content:center;
+                         width:min(94vw,1080px); margin:0 auto; }
+  .s5-crush .force { flex:1; max-width:40%; padding:var(--s-5) var(--s-6);
+                     border-radius:var(--radius); font-size:var(--t-lg);
+                     display:flex; align-items:center; line-height:1.3; }
+  .s5-crush .f-more { background:rgba(53,214,164,.10); border:1px solid var(--accent-cool);
+                      color:var(--accent-cool); justify-content:flex-end; text-align:right; }
+  .s5-crush .f-ai   { background:rgba(255,92,92,.10); border:1px solid var(--accent-hot);
+                      color:var(--accent-hot); justify-content:flex-start; text-align:left; }
+  .s5-crush .force b { color:var(--ink); }
+  .s5-crush .home { align-self:center; z-index:2; margin:0 calc(var(--s-4) * -1);
+                    padding:var(--s-3) var(--s-5); background:var(--bg-input);
+                    border:2px solid var(--line-strong); border-radius:10px;
+                    font-weight:800; font-size:var(--t-xl); letter-spacing:.03em; }
+  .s5-crush[aria-hidden="false"] .f-more   { animation:s5inL .85s var(--ease) both; }
+  .s5-crush[aria-hidden="false"] .f-ai     { animation:s5inR .85s var(--ease) both; }
+  .s5-crush[aria-hidden="false"] .home     { animation:s5crush .6s ease-in-out .85s both,
+                                                        s5glow 1.8s var(--ease) 1.4s both; }
+  .s5-crush[aria-hidden="false"] .crush-cap{ animation:s5vfade .5s var(--ease) 1.7s both; }
+  @keyframes s5inL  { from{opacity:0;transform:translateX(-70px)} to{opacity:1;transform:none} }
+  @keyframes s5inR  { from{opacity:0;transform:translateX(70px)}  to{opacity:1;transform:none} }
+  @keyframes s5crush{ 0%,100%{transform:translateX(0) scale(1)}
+                      25%{transform:translateX(-4px) scale(.97)}
+                      65%{transform:translateX(4px) scale(.97)} }
+  @keyframes s5glow { 0%,100%{box-shadow:none;border-color:var(--line-strong)}
+                      50%{box-shadow:0 0 26px rgba(255,92,92,.55);border-color:var(--accent-hot)} }
+
+  /* ---- beat 3 · the strike -------------------------------- */
+  .s5-kill .kill-col { display:flex; flex-direction:column; gap:var(--s-4);
+                       width:min(90vw,880px); margin:0 auto; }
+  .s5-kill .def { position:relative; display:flex; align-items:center;
+                  justify-content:space-between; gap:var(--s-5);
+                  padding:var(--s-4) var(--s-5); background:var(--bg-raised);
+                  border:1px solid var(--line); border-radius:var(--radius); text-align:left; }
+  .s5-kill .label { position:relative; font-size:var(--t-lg); font-weight:650; color:var(--ink); }
+  .s5-kill .label::after { content:""; position:absolute; left:-3%; right:-3%; top:54%;
+                           height:3px; background:var(--accent-hot); border-radius:2px;
+                           transform:scaleX(0); transform-origin:left; }
+  .s5-kill .verdict { flex-shrink:0; color:var(--accent-hot); font-family:var(--font-mono);
+                      font-size:var(--t-sm); font-weight:700; opacity:0; text-align:right; }
+  .s5-kill[aria-hidden="false"] .d1 .label::after { animation:s5strike .45s var(--ease) .5s both; }
+  .s5-kill[aria-hidden="false"] .d1 .verdict      { animation:s5vfade .4s var(--ease) .95s both; }
+  .s5-kill[aria-hidden="false"] .d2 .label::after { animation:s5strike .45s var(--ease) 1.3s both; }
+  .s5-kill[aria-hidden="false"] .d2 .verdict      { animation:s5vfade .4s var(--ease) 1.75s both; }
+  .s5-kill[aria-hidden="false"] .s5-both          { animation:s5vfade .5s var(--ease) 2.4s both; }
+  @keyframes s5strike { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+  /* shared fade */
+  @keyframes s5vfade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — title -->
+    <div data-until="0" class="s5-titlewrap center" style="align-self:center">
+      <span class="s5-kick pill" style="display:inline-block;margin-bottom:var(--s-5)">where segment 3 meets segment 4</span>
+      <h1 class="s5-big">The dilemma</h1>
+    </div>
+
+    <!-- BEAT 1 — the collision -->
+    <div data-step="1" data-until="1" class="s5-crush center" style="align-self:center;width:100%">
+      <h2 class="muted" style="max-width:34ch;margin:0 auto var(--s-6)">
+        Everything we proved in the last twenty minutes runs straight into everything else we proved.
+      </h2>
+      <div class="crush-row">
+        <div class="force f-more"><span>Students must write <b>far more</b> &mdash; and it has to go <b>home</b></span></div>
+        <div class="home">HOME</div>
+        <div class="force f-ai"><span>At home, <b>AI</b> does the writing &mdash; and the <b>thinking</b></span></div>
+      </div>
+      <p class="crush-cap faint" style="margin-top:var(--s-6)">
+        The writing they need most is the writing we can least protect.
+      </p>
+    </div>
+
+    <!-- BEAT 2 — your own words (live echo of seg 1) -->
+    <div data-step="2" data-until="2" class="center" style="align-self:center;width:100%;max-width:72ch;margin-left:auto;margin-right:auto">
+      <h2 class="muted" style="margin-bottom:var(--s-5)">
+        I opened by asking how you keep AI slop out of your classroom. You said:
+      </h2>
+      <div data-echo="i1-slop-wall"
+           data-echo-match="revision|version history|edit history|history|in class|in-class|class only|during class|in person|in-person|supervis|handwrit|hand-writ|hand writ|pen and paper|on paper|lockdown|browser|watch"
+           data-echo-max="4"
+           style="max-width:60ch;margin:0 auto;text-align:left"></div>
+      <p data-echo-if-empty class="muted" style="max-width:56ch;margin:0 auto">
+        Two answers come up every time: <b style="color:var(--ink)">check the revision history</b>,
+        and <b style="color:var(--ink)">only let them write in class</b>.
+      </p>
+    </div>
+
+    <!-- BEAT 3 — the strike: both defences, gone -->
+    <div data-step="3" data-until="3" class="s5-kill center" style="align-self:center;width:100%">
+      <h2 class="muted" style="margin-bottom:var(--s-6)">Those two answers were your whole defence.</h2>
+      <div class="kill-col">
+        <div class="def d1">
+          <span class="label">Check the revision history</span>
+          <span class="verdict">&times; FAKED &mdash; you watched it happen</span>
+        </div>
+        <div class="def d2">
+          <span class="label">Only let them write in class</span>
+          <span class="verdict">&times; NOT ENOUGH &mdash; 4&times; won&rsquo;t fit the period</span>
+        </div>
+      </div>
+      <p class="s5-both" style="font-size:var(--t-xl);color:var(--ink);font-weight:650;margin-top:var(--s-6)">
+        Both of your instincts. Gone.
+      </p>
+    </div>
+
+    <!-- BEAT 4 — the trap named as a surrender -->
+    <div data-step="4" data-until="4" class="center" style="align-self:center;width:100%">
+      <h1 style="margin:0 auto">So we do the safe thing.</h1>
+      <p class="lead" style="font-size:var(--t-xl);max-width:32ch;margin:var(--s-5) auto 0">
+        We pull writing back into the classroom. Timed. Supervised. Small.
+      </p>
+      <p style="font-size:var(--t-xl);color:var(--accent-hot);font-weight:700;line-height:1.2;max-width:26ch;margin:var(--s-6) auto 0">
+        To keep AI out, we quietly stopped teaching them to write.
+      </p>
+      <p class="faint" style="max-width:52ch;margin:var(--s-5) auto 0">
+        That isn&rsquo;t a solution. It&rsquo;s the surrender most schools are making right now.
+      </p>
+    </div>
+
+    <!-- BEAT 5 — the question, held → seg 6 -->
+    <div data-step="5" class="center" style="align-self:center;width:100%">
+      <p class="muted" style="font-size:var(--t-lg);margin:0 auto var(--s-5)">The whole problem, in one sentence:</p>
+      <h1 style="font-size:var(--t-xl);max-width:24ch;margin:0 auto;line-height:1.25">
+        How do we get students to write as much as they need &mdash;
+        <span style="color:var(--accent-cool)">at home</span> &mdash;
+        without handing the thinking to a <span style="color:var(--accent-hot)">machine</span>?
+      </h1>
+      <p class="faint" style="margin:var(--s-6) auto 0">That&rsquo;s what the rest of today is for.</p>
+    </div>
+
+  </div><!-- /.stack -->
+
+</div>
