@@ -142,6 +142,9 @@ export default {
 
       injectCSS();
 
+      const yesPct = pct(tally(unique, 'value').get('yes') || 0, total);
+
+      /* ---- INPUT: the vote is open, the tally climbs ---- */
       if (phase === 'input') {
         stop();          // a genuine restart: the vote is open again
         return mount(root, h('div', { class: 'center' },
@@ -150,69 +153,62 @@ export default {
           h('p', { class: 'muted' }, 'answers in')));
       }
 
-      /* ---- LOCKED: the autotyper ---- */
+      /* ---- LOCKED: the RESULTS, then the question "how?" ----
+         Show the room how it voted, and hold there. This is where Michael
+         asks OUT LOUD how you'd fake it — to see if anyone already knows
+         about the autotypers — BEFORE the answer. The autotyper IS the
+         answer, and it waits for the reveal. No autotyper here. */
       if (phase === 'locked') {
-        /* The screen page hands us a NEW root on every poll and mounts
-           it over the old one, so checking whether our element is still
-           connected is useless — it never is. A single late vote
-           arriving mid-animation was starting the whole thing again
-           from a blank page, thirty seconds in, in front of the room.
-
-           So the mock lives at module level and gets re-parented into
-           whatever root we are given. The timers hold element
-           references, so moving it does not interrupt anything. */
-        if (run && !run.dead) { mount(root, run.el); return; }
         stop();
-        run = { dead: false, timers: [], el: h('div', { style: 'width:100%' }) };
-        mount(root, run.el);
-        cycle();
-        return;
+        return mount(root, h('div', { class: 'fade-in center' },
+          h('p', { class: 'muted', style: 'font-size:var(--t-lg)' }, QUESTION),
+          splitView(yesPct, total),
+          h('p', { class: 'lead', style: 'font-size:var(--t-xl);max-width:42ch;margin:var(--s-6) auto 0' },
+            'So — how would you fake this?')));
       }
 
-      /* ---- REVEAL ----
-         Stop the loop here. It now repeats until you advance (Michael's
-         rule for moving beats), so there is nothing to preserve across
-         a back-press — landing on `locked` again just restarts it from
-         the top, which is what you want anyway. Stopping also means the
-         typing timers aren't left running invisibly behind the reveal. */
+      /* ---- REVEAL: the how, demonstrated ----
+         The autotyper runs on a loop under a fixed headline. run.el is a
+         stable wrapper the screen re-parents each poll; the mock is
+         rebuilt inside run.slot every loop, so a late vote or a resize
+         never interrupts it, and the headline is never lost to a redraw. */
+      if (run && !run.dead) { mount(root, run.el); return; }
       stop();
 
-      const counts = tally(unique, 'value');
-      const yes = counts.get('yes') || 0;
-      const no  = counts.get('no')  || 0;
-      const yesPct = pct(yes, total);
-
-      /* The line has to work whichever way the room broke. A room that
-         already said "yes" is not wrong — it has just conceded the
-         thing it was relying on, which is the better sting. */
-      let line;
-      if (!total)            line = 'It takes a browser extension and about nine dollars.';
-      else if (yesPct >= 60) line = 'Most of you already knew. So what have we been relying on?';
-      else if (yesPct <= 40) line = 'It took a browser extension and about nine dollars.';
-      else                   line = 'The room was split. The answer is not.';
-
-      mount(root, h('div', { class: 'fade-in center' },
-        h('p', { class: 'muted', style: 'font-size:var(--t-lg)' }, QUESTION),
-        h('p', { class: 'big', style: 'color:var(--accent-hot);margin:var(--s-4) 0' }, 'Yes.'),
-
-        total ? h('div', { style: 'max-width:52ch;margin:0 auto var(--s-6)' },
-          h('div', { class: 'i2-split' },
-            h('div', {},
-              h('div', { class: 'mono', style: 'font-size:var(--t-lg)' }, yesPct + '%'),
-              h('div', { class: 'faint', style: 'font-size:var(--t-sm)' }, 'said yes'),
-              h('div', { class: 'bar', style: 'margin-top:var(--s-2)' },
-                h('i', { style: `width:${yesPct}%` }))),
-            h('div', {},
-              h('div', { class: 'mono', style: 'font-size:var(--t-lg)' }, (100 - yesPct) + '%'),
-              h('div', { class: 'faint', style: 'font-size:var(--t-sm)' }, 'said no'),
-              h('div', { class: 'bar', style: 'margin-top:var(--s-2)' },
-                h('i', { style: `width:${100 - yesPct}%;background:var(--ink-faint)` }))))) : null,
-
-        h('p', { class: 'lead', style: 'font-size:var(--t-xl);max-width:40ch;margin:0 auto' }, line)
-      ));
+      const slot = h('div', { class: 'i2-mockslot', style: 'width:100%' });
+      const el = h('div', { class: 'fade-in', style: 'width:100%' },
+        h('p', { class: 'big', style: 'color:var(--accent-hot);margin:0 0 var(--s-2);text-align:center' }, 'Yes.'),
+        h('p', { class: 'lead center', style: 'font-size:var(--t-lg);max-width:46ch;margin:0 auto var(--s-4)' },
+          killLine(yesPct, total)),
+        slot);
+      run = { dead: false, timers: [], el, slot };
+      mount(root, el);
+      cycle();
     }
   }
 };
+
+/* The vote split, shown in `locked` before the answer. */
+function splitView(yesPct, total) {
+  if (!total) return h('p', { class: 'faint mono', style: 'margin:var(--s-6) 0' }, 'no votes in');
+  const col = (label, p, muted) => h('div', {},
+    h('div', { class: 'mono', style: 'font-size:var(--t-2xl)' }, p + '%'),
+    h('div', { class: 'faint', style: 'font-size:var(--t-sm)' }, label),
+    h('div', { class: 'bar', style: 'margin-top:var(--s-2)' },
+      h('i', { style: `width:${p}%` + (muted ? ';background:var(--ink-faint)' : '') })));
+  return h('div', { style: 'max-width:52ch;margin:var(--s-6) auto' },
+    h('div', { class: 'i2-split' }, col('said yes', yesPct, false), col('said no', 100 - yesPct, true)));
+}
+
+/* The closing line, adapting to how the room broke. A room that already
+   said "yes" is not wrong — it has just conceded the thing it was relying
+   on, which is the better sting. */
+function killLine(yesPct, total) {
+  if (!total)       return 'It takes a browser extension and about nine dollars.';
+  if (yesPct >= 60) return 'Most of you already knew. So what have we been relying on?';
+  if (yesPct <= 40) return 'It took a browser extension and about nine dollars.';
+  return 'The room was split. The answer is not.';
+}
 
 /* ---------- the mock ----------------------------------------
    Same document chrome as slide 03, different sidebar. That is the
@@ -261,7 +257,7 @@ function cycle() {
   if (stage && run.el && !stage.contains(run.el)) return stop();
 
   const box = buildAutotyper();
-  mount(run.el, box.el);
+  mount(run.slot || run.el, box.el);            // reveal gives us a slot under the headline
   playOnce(box, () => schedule(4500, cycle));   // hold the kill-shot, then loop
 }
 
@@ -418,6 +414,8 @@ function injectCSS() {
   /* The swap at the end deserves a beat of its own. */
   .ptframe--flip { transition: box-shadow .6s var(--ease); box-shadow: 0 18px 60px rgba(76,154,255,.35); }
   .i2-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); text-align: left; }
+  /* In reveal the mock sits under a headline, so give it a little less height. */
+  .i2-mockslot .ptframe { height: 54vh; }
   `;
   document.head.append(s);
 }
