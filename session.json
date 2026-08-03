@@ -34,7 +34,7 @@
   "activities": {
     "i0-gauge":        { "label": "I-0 · Gut-check gauge",     "reveal": "hold",  "built": true  },
     "i1-slop-wall":    { "label": "I-1 · Anti-slop wall",      "reveal": "live",  "built": true  },
-    "i2-fake-history": { "label": "I-2 · Can it be faked?",     "reveal": "hold",  "built": false },
+    "i2-fake-history": { "label": "I-2 · Can it be faked?",     "reveal": "hold",  "built": true  },
     "i3-how-much":     { "label": "I-3 · How much writing?",   "reveal": "hold",  "built": false },
     "i4-flag-rate":    { "label": "I-4 · Guess the flag rate", "reveal": "hold",  "built": false },
     "i5-inception":    { "label": "I-5 · Inception Effect",    "reveal": "hold",  "built": false },
