@@ -16,8 +16,10 @@
        1  everything to Turnitin — in-class AND at-home (build-and-hold)
        2  the baseline — in-class = KNOWN authentic (build-and-hold)
        3  the comparison — unknown measured against known; AI stands out
-       4  consequence — flagged? 0%. no redo.
-       5  payoff + tease → seg 7
+       4  consequence — on AT-HOME writing: flagged? 0%. no redo. (in-class = the
+          baseline, never penalised — the rule is only for writing that leaves the room)
+       5  payoff — that's how at-home writing comes back
+       6  the challenge — "Are you skeptical? Let me convince you." → seg 7
 
      Build-and-hold: keyframes scoped to [aria-hidden="false"], iteration 1 +
      fill both, so each visual assembles once and holds while Michael talks and
@@ -80,6 +82,9 @@
   .s6-cmp[aria-hidden="false"] .cmp-unknown { animation:s6R .6s var(--ease) both; }
   .s6-cmp[aria-hidden="false"] .cmp-vs      { animation:s6fade .5s var(--ease) .5s both; }
   .s6-cmp[aria-hidden="false"] .cmp-tag     { animation:s6fade .5s var(--ease) 1.1s both; }
+  /* beat 6 · the challenge */
+  .s6-challenge[aria-hidden="false"] h1    { animation:s6fade .6s var(--ease) both; }
+  .s6-challenge[aria-hidden="false"] .lead { animation:s6fade .6s var(--ease) .5s both; }
   </style>
 
   <div class="stack" style="margin-top:var(--s-4)">
@@ -134,24 +139,29 @@
       </p>
     </div>
 
-    <!-- BEAT 4 — the consequence -->
+    <!-- BEAT 4 — the consequence (scoped to AT-HOME writing) -->
     <div data-step="4" data-until="4" class="center" style="align-self:center;width:100%">
-      <p class="muted" style="font-size:var(--t-lg);margin-bottom:var(--s-4)">And the rule is simple:</p>
+      <p class="muted" style="font-size:var(--t-lg);margin-bottom:var(--s-4)">And on writing done at home, the rule is simple:</p>
       <h1 style="font-size:var(--t-3xl);margin:0 auto;color:var(--accent-hot)">Flagged? 0%. No redo.</h1>
-      <p class="faint" style="max-width:46ch;margin:var(--s-6) auto 0">
-        No debate, no plausible deniability &mdash; you&rsquo;re holding their own baseline.
+      <p class="faint" style="max-width:48ch;margin:var(--s-6) auto 0">
+        The in-class work is the baseline &mdash; this rule is only for the writing that leaves the room.
       </p>
     </div>
 
-    <!-- BEAT 5 — payoff + tease → seg 7 -->
-    <div data-step="5" class="center" style="align-self:center;width:100%">
+    <!-- BEAT 5 — payoff -->
+    <div data-step="5" data-until="5" class="center" style="align-self:center;width:100%">
       <h1 style="max-width:20ch;margin:0 auto;line-height:1.2">
         That&rsquo;s how at-home writing <span style="color:var(--accent-cool)">comes back</span>.
       </h1>
       <p class="lead" style="font-size:var(--t-xl);max-width:32ch;margin:var(--s-5) auto 0">
         Enough writing <i>and</i> real writing &mdash; you stop having to choose.
       </p>
-      <p class="faint" style="margin-top:var(--s-6)">But does it actually work? That&rsquo;s the next question. &rarr;</p>
+    </div>
+
+    <!-- BEAT 6 — the challenge → seg 7 -->
+    <div data-step="6" class="s6-challenge center" style="align-self:center;width:100%">
+      <h1 style="max-width:16ch;margin:0 auto;line-height:1.15">Are you skeptical?</h1>
+      <p class="lead" style="font-size:var(--t-2xl);color:var(--accent-cool);margin-top:var(--s-5)">Let me convince you.</p>
     </div>
 
   </div><!-- /.stack -->
