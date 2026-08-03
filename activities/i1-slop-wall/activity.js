@@ -1,5 +1,5 @@
 /* ============================================================
-   I-1 · ANTI-SLOP WALL  (segment 2, ~2.5 min)
+   I-1 · ANTI-SLOP WALL  (segment 1, ~3 min — the LAUNCH + scan-in)
 
    "How do you protect from AI slop in your classroom?"
 

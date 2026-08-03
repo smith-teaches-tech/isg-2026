@@ -1,12 +1,14 @@
 /* ============================================================
-   I-0 · GUT-CHECK GAUGE  (segment 1, ~1 min)
+   I-0 · GUT-CHECK GAUGE  (segment 8, ~1.5 min)
 
    "What percentage of the at-home writing you receive do you
     think is AI-assisted?"
 
-   Its real job is the scan-in — getting every device onto the
-   site before the session starts. The number is a bonus, and a
-   good one: the room's own estimate is the opening premise.
+   A PREDICTION, taken right before the IB Cohort 14 data. Everyone
+   commits to a number, then the cohort figures show what actually
+   happened — the room's own estimate is the premise the data then
+   confronts. (It used to open the session and double as the scan-in;
+   that job moved to the slop wall at segment 1.)
 
    Reveal: HOLD. Nothing goes up until the presenter reveals.
    ============================================================ */
