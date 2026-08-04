@@ -15,15 +15,20 @@
      BOTH metrics at once (Michael's "show both" call). Value labels sit in a
      clean two-line block ABOVE each stack (any% amber over flagged% red).
 
-     The causal spine: we caught them (seg 8), we offered amnesty and they
-     confessed (seg 9), we did NOTHING — and one semester later it jumped +63%.
-     The room's gauge guess (seg 10) sits against that 74%. Hands to inception.
+     The causal spine (reframed 2026-08-04): caught (seg 8), confessed under
+     amnesty (seg 9), and we DID act — flagged students rewrote the flagged work
+     in their own words + an IB diploma warning (seg 10) — and one semester later
+     it STILL jumped +63%. The room just guessed the TOK flag rate (seg 10),
+     expecting the consequence dropped it; this reveal confronts that dissonance.
+     Punishment + warning didn't move it → hands to inception (why? they don't
+     think they cheated — the "barely used it" plant from seg 9).
 
      Beats (one .stack; the chart persists from step 1 and text layers on):
-       0  the recap — caught them / amnesty / did nothing → what happened next?
+       0  the setup — they rewrote it / were warned / so it should have dropped
+          → "you just guessed how far; here's what actually happened"
        1  THE CHART — bars climb left→right, TOK tallest (build-and-hold)
-       2  the jump — +63% Sept→Jan + "we did nothing. look what happened."
-       3  forward — still no consequences → they kept going (→ inception)
+       2  the jump — +63% Sept→Jan + "they rewrote it, they were warned, it still climbed"
+       3  forward — a rewrite + a diploma warning didn't move it → inception
 
      Build-and-hold: keyframes scoped to [aria-hidden="false"], iter 1 + fill
      both. Heights are literal data % of the track. Pure CSS, no script. -->
@@ -92,12 +97,12 @@
 
   <div class="stack" style="margin-top:var(--s-4)">
 
-    <!-- BEAT 0 — the recap -->
+    <!-- BEAT 0 — the setup (post-consequence) -->
     <div data-until="0" class="s11-recap center" style="align-self:center;width:100%">
-      <div class="rline r1" style="font-size:var(--t-2xl);font-weight:700">We <b>caught</b> them.</div>
-      <div class="rline r2" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">We offered <b>amnesty</b>.</div>
-      <div class="rline r3" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">We did <b style="color:var(--accent-hot)!important">nothing</b>.</div>
-      <p class="rq muted" style="font-size:var(--t-lg);margin-top:var(--s-6)">So the next semester, I ran their TOK essays. Watch.</p>
+      <div class="rline r1" style="font-size:var(--t-2xl);font-weight:700">They <b>rewrote</b> the flagged work.</div>
+      <div class="rline r2" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">They were <b>warned</b> about their diplomas.</div>
+      <div class="rline r3" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">So it should have <b style="color:var(--accent-cool)!important">dropped</b>.</div>
+      <p class="rq muted" style="font-size:var(--t-lg);margin-top:var(--s-6)">You just guessed how far. Here&rsquo;s what actually happened.</p>
     </div>
 
     <!-- BEAT 1+ — the chart (persists), with jump (step 2) and forward (step 3) -->
@@ -141,12 +146,12 @@
       <!-- BEAT 2 — the jump -->
       <div data-step="2" class="s11-jump">
         <span class="pct">+63% flagged in one semester</span>
-        <p class="said">We did nothing &mdash; and it got <b style="color:var(--accent-hot)">worse</b>. Look what happened.</p>
+        <p class="said">They rewrote it. They were warned. It still <b style="color:var(--accent-hot)">climbed</b>.</p>
       </div>
 
       <!-- BEAT 3 — forward to inception -->
       <div data-step="3" class="s11-fwd">
-        <p class="faint" style="font-size:var(--t-lg)">Still no consequences. So they kept going&hellip;</p>
+        <p class="faint" style="font-size:var(--t-lg)">A rewrite and a diploma warning didn&rsquo;t move it &mdash; because they don&rsquo;t think they cheated at all&hellip;</p>
       </div>
 
     </div><!-- /chart -->

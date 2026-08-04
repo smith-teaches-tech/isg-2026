@@ -1,16 +1,17 @@
 /* ============================================================
-   I-0 · GUT-CHECK GAUGE  (segment 8, ~1.5 min)
+   I-0 · GUESS THE TOK FLAG RATE  (segment 10, ~1.5 min)
 
-   "What percentage of the at-home writing you receive do you
-    think is AI-assisted?"
+   Reframed 2026-08-04. The slide (10-gauge) just delivered the
+   consequence (flagged students rewrote the flagged sections in their
+   own words) and the IB warning (a flagged essay can cost the diploma).
+   Now the room guesses: after all that, what % of the NEXT semester's
+   TOK essays came back flagged?
 
-   A PREDICTION, taken right before the IB Cohort 14 data. Everyone
-   commits to a number, then the cohort figures show what actually
-   happened — the room's own estimate is the premise the data then
-   confronts. (It used to open the session and double as the scan-in;
-   that job moved to the slop wall at segment 1.)
-
-   Reveal: HOLD. Nothing goes up until the presenter reveals.
+   The room guesses LOW — they expect the consequence + warning worked.
+   Reveal = HOLD → the room's EXPECTATION (histogram + "expects X%
+   flagged"). The truth (38.2%, UP +63%) lands on seg 11 — the dissonance.
+   (Was the "% of at-home writing that's AI-assisted" gut-check; Michael
+   cut that wording 2026-08-04 — it made no sense at this spot.)
    ============================================================ */
 
 import { h, mount, countUp } from '../../assets/js/ui.js';
@@ -21,7 +22,7 @@ import { h, mount, countUp } from '../../assets/js/ui.js';
    zero again, mid-sentence, while Michael was saying the number. */
 let counted = null;
 
-const QUESTION = 'What % of the at-home writing you receive do you think is AI-assisted?';
+const QUESTION = 'After the rewrite and the IB warning — what % of TOK essays came back flagged?';
 
 export default {
 
@@ -44,9 +45,9 @@ export default {
           h('div', { class: 'pill' }, phase === 'idle' ? 'stand by' : 'answers closed')));
       }
 
-      const out = h('div', { class: 'big center mono' }, '50%');
+      const out = h('div', { class: 'big center mono' }, '15%');
       const slider = h('input', {
-        type: 'range', min: '0', max: '100', step: '5', value: '50',
+        type: 'range', min: '0', max: '100', step: '5', value: '15',
         style: 'width:100%;accent-color:var(--accent);height:2.5rem',
         oninput: e => { out.textContent = e.target.value + '%'; }
       });
@@ -55,7 +56,7 @@ export default {
         h('h2', {}, QUESTION),
         h('div', { class: 'card' }, out, slider,
           h('div', { class: 'faint', style: 'display:flex;justify-content:space-between;font-size:var(--t-xs)' },
-            h('span', {}, 'none of it'), h('span', {}, 'all of it'))),
+            h('span', {}, 'none flagged'), h('span', {}, 'all flagged'))),
         h('button', {
           class: 'btn btn--primary',
           onclick: async e => {
@@ -120,7 +121,9 @@ export default {
         ),
 
         h('p', { class: 'center', style: 'font-size:var(--t-xl)' },
-          'This room says ', avgEl, ' of at-home writing is AI-assisted.')
+          'The room expects ', avgEl, ' came back flagged.'),
+        h('p', { class: 'center muted', style: 'font-size:var(--t-base);margin-top:var(--s-2)' },
+          'The truth is next…')
       ));
 
       if (counted === avg) avgEl.textContent = avg + '%';

@@ -16,7 +16,7 @@
     { "n": 7,  "min": 4,   "title": "Turnitin study — guess the flag rate",   "slide": "07-turnitin",      "activity": "i4-flag-rate" },
     { "n": 8,  "min": 2,   "title": "IB Cohort 14 — EE, AI use rising",       "slide": "08-cohort-ee",     "activity": null },
     { "n": 9,  "min": 3,   "title": "The amnesty — who came forward",         "slide": "09-amnesty",       "activity": null },
-    { "n": 10, "min": 1.5, "title": "Gut-check gauge — % of at-home writing",  "slide": "10-gauge",         "activity": "i0-gauge" },
+    { "n": 10, "min": 1.5, "title": "The consequence → guess the TOK flag rate", "slide": "10-gauge",        "activity": "i0-gauge" },
     { "n": 11, "min": 2,   "title": "TOK — the climb",                        "slide": "11-tok-climb",     "activity": null },
     { "n": 12, "min": 6,   "title": "The Inception Effect",                   "slide": "12-inception",     "activity": "i5-inception" },
     { "n": 13, "min": 2,   "title": "The steroids analogy",                   "slide": "13-steroids",      "activity": null },
@@ -32,7 +32,7 @@
   ],
 
   "activities": {
-    "i0-gauge":        { "label": "I-0 · Gut-check gauge",     "reveal": "hold",  "built": true  },
+    "i0-gauge":        { "label": "I-0 · Guess TOK flag rate", "reveal": "hold",  "built": true  },
     "i1-slop-wall":    { "label": "I-1 · Anti-slop wall",      "reveal": "live",  "built": true  },
     "i2-fake-history": { "label": "I-2 · Can it be faked?",     "reveal": "hold",  "built": true  },
     "i3-how-much":     { "label": "I-3 · How much writing?",   "reveal": "hold",  "built": true },
