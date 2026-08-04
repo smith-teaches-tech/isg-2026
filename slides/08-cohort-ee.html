@@ -1,0 +1,126 @@
+<!-- SEGMENT 8 · IB COHORT 14 — EE, AI USE RISING · ~2 min · NO interaction
+
+     The first rung above the floor. Seg 7 just proved the detector doesn't
+     cry wolf: 44 known-human docs, 0 flagged. So when THIS year's essays come
+     back lit up, the room can't reach for "false positives" — we just took
+     that away. This is where the climb begins (seg 11 is the full climb).
+
+     Visual rhyme with seg 7: the same document-chip grid. But where seg 7's
+     44 chips were all clean green → 0 flagged, this cohort's 34 chips light
+     up — 18 clean, 8 asterisk (trace), 8 flagged >20%. Ordered so the colour
+     blocks read as proportion at a glance (green wall, amber+red corner).
+
+     Data (REAL — Michael's classes; present as real):
+       IB Cohort 14 Extended Essays, September 2025, n=34.
+       8 flagged >20% (23.5%) · 8 asterisk/inconclusive (23.5%) · 18 clean (53%).
+       Any AI signal = 16/34 = 47%.
+
+     Beats (one .stack, screen is overflow:hidden):
+       0  pivot — 2022 was clean; then I ran THIS year's essays
+       1  the cohort lights up — grid + both metrics (47% any / 23.5% flagged)
+       2  the point — not false positives (we just proved that) → so I asked them
+
+     Build-and-hold: keyframes scoped to [aria-hidden="false"], iter 1 + fill
+     both. Pure CSS, no script. ch max-widths on HEADINGS only. -->
+
+<div class="slide wide s8">
+
+  <style>
+  @keyframes s8fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  @keyframes s8pop  { from{opacity:0;transform:scale(.9)}        to{opacity:1;transform:none} }
+  @keyframes s8dot  { from{opacity:0;transform:translateY(10px) scale(.7)} to{opacity:1;transform:none} }
+
+  /* beat 0 · pivot */
+  .s8-pivot[aria-hidden="false"] .p-kick { animation:s8fade .5s var(--ease) both; }
+  .s8-pivot[aria-hidden="false"] h1      { animation:s8fade .6s var(--ease) .15s both; }
+  .s8-pivot[aria-hidden="false"] .p-sub  { animation:s8fade .6s var(--ease) .55s both; }
+
+  /* beat 1 · the cohort grid + metrics */
+  .s8-grid {
+    display:grid; grid-template-columns:repeat(17, 1fr); gap:0.4vw;
+    width:min(74vw,820px); margin:0 auto var(--s-4);
+  }
+  .s8-grid .dot { aspect-ratio:3/4; border-radius:3px; }
+  .s8-grid .clean { background:rgba(53,214,164,.14); border:1px solid var(--accent-cool); box-shadow:inset 0 -2px 0 rgba(53,214,164,.30); }
+  .s8-grid .ast   { background:rgba(255,171,76,.16);  border:1px solid var(--accent-warm); box-shadow:inset 0 -2px 0 rgba(255,171,76,.34); }
+  .s8-grid .flag  { background:rgba(255,92,92,.18);    border:1px solid var(--accent-hot);  box-shadow:inset 0 -2px 0 rgba(255,92,92,.38); }
+  .s8-cohort[aria-hidden="false"] .dot { animation:s8dot .45s var(--ease) both; }
+  .s8-cohort[aria-hidden="false"] .dot:nth-child(n+18) { animation-delay:.5s; }
+  .s8-cohort[aria-hidden="false"] .dot:nth-child(n+26) { animation-delay:.85s; }
+
+  .s8-legend { display:flex; gap:var(--s-5); justify-content:center; flex-wrap:wrap;
+               font-size:var(--t-sm); color:var(--ink-dim); margin-bottom:var(--s-5); }
+  .s8-legend span { display:inline-flex; align-items:center; gap:var(--s-2); }
+  .s8-legend i { width:.8em; height:.8em; border-radius:2px; display:inline-block; }
+
+  .s8-tiles { display:flex; gap:var(--s-5); justify-content:center; flex-wrap:wrap; }
+  .s8-tile { padding:var(--s-3) var(--s-6); border-radius:var(--radius); background:var(--bg-raised);
+             border:1px solid var(--line); min-width:16ch; }
+  .s8-tile .num { font-size:var(--t-3xl); font-weight:800; line-height:1; font-family:var(--font-mono); }
+  .s8-tile .lab { font-size:var(--t-base); color:var(--ink-dim); margin-top:var(--s-2); }
+  .s8-tile.any  { border-color:var(--accent-warm); }
+  .s8-tile.any  .num { color:var(--accent-warm); }
+  .s8-tile.hard { border-color:var(--accent-hot); }
+  .s8-tile.hard .num { color:var(--accent-hot); }
+
+  .s8-cohort[aria-hidden="false"] .s8-head   { animation:s8fade .5s var(--ease) both; }
+  .s8-cohort[aria-hidden="false"] .s8-legend { animation:s8fade .5s var(--ease) 1.2s both; }
+  .s8-cohort[aria-hidden="false"] .s8-tiles  { animation:s8pop  .55s var(--ease) 1.35s both; }
+
+  /* beat 2 · the point */
+  .s8-point[aria-hidden="false"] { animation:s8fade .6s var(--ease) both; }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — pivot -->
+    <div data-until="0" class="s8-pivot center" style="align-self:center;width:100%">
+      <span class="p-kick pill" style="display:inline-block;margin-bottom:var(--s-5)">three years later</span>
+      <h1 style="max-width:20ch;margin:0 auto;line-height:1.15">
+        Then I ran <span style="color:var(--accent-cool)">this year&rsquo;s</span> essays.
+      </h1>
+      <p class="p-sub muted" style="font-size:var(--t-lg);max-width:40ch;margin:var(--s-5) auto 0">
+        Same detector. Same 20% line. <b style="color:var(--ink)">34 IB Extended Essays</b>, September 2025.
+      </p>
+    </div>
+
+    <!-- BEAT 1 — the cohort lights up (+ step 2 point) -->
+    <div data-step="1" class="s8-cohort center" style="align-self:center;width:100%">
+
+      <h2 class="s8-head muted" style="margin-bottom:var(--s-5);max-width:26ch;margin-left:auto;margin-right:auto">
+        Here&rsquo;s what came back.
+      </h2>
+
+      <div class="s8-grid" aria-hidden="true">
+        <!-- 18 clean -->
+        <span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span><span class="dot clean"></span>
+        <!-- 8 asterisk -->
+        <span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span><span class="dot ast"></span>
+        <!-- 8 flagged -->
+        <span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span><span class="dot flag"></span>
+      </div>
+
+      <div class="s8-legend">
+        <span><i style="background:var(--accent-cool)"></i> 18 clean (0%)</span>
+        <span><i style="background:var(--accent-warm)"></i> 8 asterisk (*)</span>
+        <span><i style="background:var(--accent-hot)"></i> 8 flagged (&gt;20%)</span>
+      </div>
+
+      <div class="s8-tiles">
+        <div class="s8-tile any"><div class="num">47%</div><div class="lab">had AI in them &mdash; 16 of 34</div></div>
+        <div class="s8-tile hard"><div class="num">23.5%</div><div class="lab">flagged over 20% &mdash; 8 of 34</div></div>
+      </div>
+
+      <div data-step="2" class="s8-point" style="margin-top:var(--s-6)">
+        <p style="font-size:var(--t-xl);max-width:44ch;margin:0 auto;color:var(--ink)">
+          This is the detector that just cleared <b style="color:var(--accent-cool)">44 out of 44</b>.
+          These aren&rsquo;t false alarms.
+        </p>
+        <p class="faint" style="margin-top:var(--s-3)">So I asked them.</p>
+      </div>
+
+    </div><!-- /beat 1 -->
+
+  </div><!-- /.stack -->
+
+</div>
