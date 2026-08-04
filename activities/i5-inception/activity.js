@@ -163,31 +163,36 @@ function stop() {
   if (run) { run.dead = true; run.timers.forEach(clearTimeout); run = null; }
 }
 
-/* A migrating fragment: red, the same red it wore in the chat. */
-function mig(text) { return h('span', { class: 'inc-mig' }, text); }
+/* Two kinds of migration, two colours:
+   migWord  — the AI's EXACT WORDS she adopted (red)
+   migThink — the AI's REASONING she adopted: the causal chain, the "why" (violet) */
+function migWord(text) { return h('span', { class: 'inc-w' }, text); }
+function migThink(...kids) { return h('span', { class: 'inc-t' }, ...kids); }
 
 function buildMigration() {
-  /* ---- the document (her paragraph, evolving) ----
-     Six slots, six real substitutions from the actual chat:
-       w1  condescends → exalts          (a WORD)
-       s2  (append) disconnected…        (a PHRASE + the reasoning chain)
-       w3  strict → controlling          (the iron-finger read, part 1)
-       s3a (append) its words imposed…   (…part 1 cont.)
-       s3b (append) obedience / tyrant   (the thesis image, part 2) */
-  const w1   = h('span', { class: 'inc-slot' }, 'condescends');
-  const s2   = h('span', { class: 'inc-slot' });
-  const w3   = h('span', { class: 'inc-slot' }, 'strict');
-  const s3a  = h('span', { class: 'inc-slot' });
-  const s3b  = h('span', { class: 'inc-slot' });
-  const capt = h('p', { class: 'inc-capt' }, 'She never asks it to write. Every word is hers.');
+  /* ---- the document (her paragraph) ----
+     Airtight to the real chat. Red = the AI's exact words she took
+     (exalts / disconnected from nature itself / imposed). Violet = the
+     AI's REASONING she adopted (the causal chain; the iron-finger "why").
+     Her own words that predate the chat — "controlling and dominating",
+     "harsh like a tyrant" — stay PLAIN. */
+  const w1    = h('span', { class: 'inc-slot' }, 'condescends');   // → exalts (a WORD)
+  const s2    = h('span', { class: 'inc-slot' });                  // → disconnected… (a WORD, inside the chain)
+  const chain = h('span', { class: 'inc-chain' },                  // the AI's REASONING (violet lands on cue)
+    'they do not value their ancestors, so they cannot value the land they once lived on',
+    s2,
+    ', so they are unworthy of it');
+  const s3    = h('span', { class: 'inc-slot' });                  // → its words imposed… (a WORD + reasoning)
+  const capt  = h('p', { class: 'inc-capt' },
+    'She never asks it to write. The words are its words — and so is the reasoning.');
 
   const doc = h('div', { class: 'inc-doc' },
     h('div', { class: 'inc-label' }, 'Real student chat — shortened & anonymized'),
     h('h4', {}, 'Chief Seattle: the superiority he builds'),
     h('div', { class: 'inc-byline' }, 'English · analysis — first draft'),
     h('p', {}, 'He ', w1, ' his tribe, dwelling on how they “never forget this beautiful world” that gave them life.'),
-    h('p', {}, 'He casts the Whites as unworthy of nature: they do not value their ancestors, so they cannot value the land they once lived on', s2, '.'),
-    h('p', {}, 'He makes their God seem ', w3, s3a, s3b, '.'),
+    h('p', {}, 'He casts the Whites as unworthy of nature — ', chain, '.'),
+    h('p', {}, 'He makes their God seem controlling and dominating', s3, ' — a God harsh like a tyrant.'),
     capt
   );
 
@@ -202,66 +207,76 @@ function buildMigration() {
     bubbles.push(b); chat.append(b); return b;
   };
 
-  // 1 — the rule she sets, and the AI's promise (the tell: it "won't write")
+  // 1 — her rule + the AI's promise, then a WORD
   const b1 = add('me', 'can you check my analysis? don’t rewrite anything — just tell me if the reasoning makes sense');
-  const b2 = add('ai', 'I won’t rewrite it, just point things out. On the verb — “condescends” means to talk down to them, the opposite. You want one that lifts them up: he ', mig('exalts'), ' them, elevates them.');
-  // 2 — the land (a phrase + the whole reasoning chain)
+  const b2 = add('ai', 'I won’t rewrite it, just point things out. Your verb is off — “condescends” means to talk down to them. You want one that lifts them up: he ', migWord('exalts'), ' them, elevates them.');
+  // 2 — THE REASONING CHAIN, typed out for her (with a word inside it)
   const b3 = add('me', 'is the part about the land clear?');
-  const b4 = add('ai', 'Almost. Walk the steps: they don’t value their ancestors → so not the land → so ', mig('disconnected from nature'), ' → so unworthy of it.');
-  // 3 — the iron finger (two words at once)
+  const b4 = add('ai', 'You skipped a link. Here’s the chain: ',
+    migThink('they don’t value their ancestors → so not the land → so ', migWord('disconnected from nature'), ' → so unworthy of it'), '.');
+  // 3 — the iron-finger "why" (reasoning) + a word
   const b5 = add('me', 'whats wrong with the iron finger part?');
-  const b6 = add('ai', '“Iron finger,” “tablets of stone” — that reads as rigid and ', mig('controlling'), ', something ', mig('imposed'), ' on them, not chosen.');
-  // 4 — the thesis image, handed over whole
-  const b7 = add('me', 'so how do i show their god is worse');
-  const b8 = add('ai', 'Nothing in the quote says “tyrant” — you build it. Kept by ', mig('obedience'), ', not love or spirit. There’s your ', mig('“harsh like a tyrant.”'));
+  const b6 = add('ai', 'Nothing says “tyrant” outright — you build it. ',
+    migThink('read it as rigid and ', migWord('imposed'), ' on them, not chosen — obedience, not spirit'), '.');
+  // 4 — the AI praises the reasoning it just supplied (the irony)
+  const b7 = add('me', 'so the reasoning works now?');
+  const b8 = add('ai', 'Yes — ', migThink('that’s exactly the kind of reasoning an English teacher looks for'), '.');
 
   for (const b of bubbles) b.classList.add('inc-b--hide');
   capt.classList.add('inc-capt--hide');
 
   const frame = h('div', { class: 'inc-frame' }, doc, chat);
-  return { frame, chat, w1, s2, w3, s3a, s3b, capt, b1, b2, b3, b4, b5, b6, b7, b8 };
+  return { frame, chat, w1, s2, chain, s3, capt, b1, b2, b3, b4, b5, b6, b7, b8 };
 }
 
 function startMigration(root) {
   const box = buildMigration();
-  const el = h('div', { class: 'fade-in', style: 'width:100%' }, box.frame);
+  const legend = h('div', { class: 'inc-legend' },
+    h('span', { class: 'inc-legend__lead' }, 'Follow closely —'),
+    h('span', { class: 'inc-key' }, h('i', { class: 'inc-sw inc-sw--w' }), 'the AI’s words'),
+    h('span', { class: 'inc-key' }, h('i', { class: 'inc-sw inc-sw--t' }), 'the AI’s reasoning'));
+  const el = h('div', { class: 'fade-in', style: 'width:100%' }, legend, box.frame);
   run = { dead: false, timers: [], el };
   mount(root, el);
 
   const show = b => { if (b) b.classList.remove('inc-b--hide'); scrollChat(box.chat); };
-  const land = (slot, ...kids) => {
-    if (!slot) return;
-    slot.replaceChildren(...kids.filter(Boolean));
-    slot.classList.add('inc-slot--lit');
-    schedule(1100, () => slot.classList.remove('inc-slot--lit'));   // pulse, then settle
-  };
   const T = document.createTextNode.bind(document);
+  const litWord = (slot, ...kids) => {
+    slot.replaceChildren(...kids.filter(Boolean));
+    slot.classList.add('inc-lit-w');
+    schedule(1100, () => slot.classList.remove('inc-lit-w'));
+  };
+  const litThink = span => {
+    span.classList.add('inc-t', 'inc-lit-t');
+    schedule(1400, () => span.classList.remove('inc-lit-t'));
+  };
 
   // 1 — a WORD swaps in
   schedule(600,  () => show(box.b1));
   schedule(1900, () => show(box.b2));
-  schedule(3100, () => { box.w1.textContent = ''; land(box.w1, mig('exalts')); });
+  schedule(3100, () => { box.w1.textContent = ''; litWord(box.w1, migWord('exalts')); });
 
-  // 2 — a PHRASE (and the reasoning chain) is appended
-  schedule(4400, () => show(box.b3));
-  schedule(5600, () => show(box.b4));
-  schedule(6800, () => land(box.s2, T(', '), mig('and are disconnected from nature itself')));
+  // 2 — the WHOLE REASONING CHAIN migrates (a word lands inside it, then the chain lights violet)
+  schedule(4500, () => show(box.b3));
+  schedule(5800, () => show(box.b4));
+  schedule(7200, () => litWord(box.s2, T(', and are '), migWord('disconnected from nature itself')));
+  schedule(7700, () => litThink(box.chain));
 
-  // 3 — the iron-finger read: her weak word replaced, plus a second word
-  schedule(8100,  () => show(box.b5));
-  schedule(9300,  () => show(box.b6));
-  schedule(10500, () => { box.w3.textContent = ''; land(box.w3, mig('controlling')); });
-  schedule(10900, () => land(box.s3a, T(', its words '), mig('imposed'), T(' on them')));
+  // 3 — the iron-finger REASONING migrates (with a word inside)
+  schedule(9300,  () => show(box.b5));
+  schedule(10600, () => show(box.b6));
+  schedule(12000, () => {
+    box.s3.replaceChildren(T(', its words '), migWord('imposed'),
+      T(' on them, kept not by love and spirit but by obedience'));
+    litThink(box.s3);
+  });
 
-  // 4 — the thesis image, handed over whole
-  schedule(12200, () => show(box.b7));
-  schedule(13400, () => show(box.b8));
-  schedule(14600, () => land(box.s3b,
-    T(', kept not by love and spirit but by '), mig('obedience'),
-    T(' — a God '), mig('“harsh like a tyrant”')));
+  // 4 — the AI praises the reasoning it built
+  schedule(13600, () => show(box.b7));
+  schedule(14800, () => show(box.b8));
 
   // the quiet line, then hold
-  schedule(16200, () => box.capt.classList.remove('inc-capt--hide'));
+  schedule(16400, () => box.capt.classList.remove('inc-capt--hide'));
 }
 
 function scrollChat(chat) {
@@ -358,7 +373,7 @@ function injectCSS() {
   /* ---- the doc | chat frame ---- */
   .inc-frame {
     container-type: size;
-    width: 100%; height: 82vh; max-width: 1500px; margin: 0 auto;
+    width: 100%; height: 79vh; max-width: 1500px; margin: 0 auto;
     display: flex; border-radius: 12px; overflow: hidden;
     box-shadow: 0 18px 55px rgba(0,0,0,.55); background: #fff; text-align: left;
   }
@@ -383,24 +398,43 @@ function injectCSS() {
     color: #b02a2a; border: 1px solid #e6b8b8; background: #fdf3f3;
     border-radius: 99px; padding: .3cqh 1.4cqh; letter-spacing: .02em;
   }
-  /* a migrated fragment — the AI's language, in her paper */
-  .inc-mig {
+  /* ---- two migration colours ----
+     RED = the AI's exact WORDS she took. VIOLET = the AI's REASONING. */
+  .inc-w {
     color: #c0271f; font-weight: 700;
-    background: linear-gradient(transparent 62%, rgba(214,40,40,.16) 0);
-    padding: 0 .06em; border-radius: 2px;
-    font-family: Georgia, serif;
+    background: linear-gradient(transparent 62%, rgba(214,40,40,.18) 0);
+    padding: 0 .06em; border-radius: 2px; font-family: Georgia, serif;
   }
-  .inc-chat .inc-mig { font-family: system-ui, sans-serif; }
-  .inc-slot { transition: none; }
-  .inc-slot--lit {
-    animation: inc-pulse 1.1s var(--ease) 1;
-    border-radius: 3px;
+  .inc-chat .inc-w { font-family: system-ui, sans-serif; }
+  /* violet highlighter over otherwise-normal text — the thinking, not a word */
+  .inc-t {
+    background: linear-gradient(transparent 52%, rgba(124,58,237,.24) 0);
+    border-radius: 2px; padding: 0 .05em;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
   }
-  @keyframes inc-pulse {
-    0%   { background: rgba(214,40,40,.0); }
-    25%  { background: rgba(214,40,40,.42); }
-    100% { background: rgba(214,40,40,.0); }
+  .inc-chain { transition: none; }   /* doc reasoning: plain until .inc-t is added on cue */
+  .inc-slot  { transition: none; }
+  /* landing pulses */
+  .inc-lit-w { animation: inc-pulse-w 1.1s var(--ease) 1; }
+  .inc-lit-t { animation: inc-pulse-t 1.4s var(--ease) 1; }
+  @keyframes inc-pulse-w {
+    0%,100% { background-color: transparent; } 24% { background-color: rgba(214,40,40,.45); }
   }
+  @keyframes inc-pulse-t {
+    0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,0); }
+    30%     { box-shadow: 0 0 0 .35em rgba(124,58,237,.22); }
+  }
+  /* ---- the key (above the frame) ---- */
+  .inc-legend {
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: var(--s-5); margin: 0 auto var(--s-3);
+    font-size: var(--t-base); color: var(--ink-dim);
+  }
+  .inc-legend__lead { color: var(--ink); font-weight: 650; }
+  .inc-key { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .inc-sw  { width: 1.5em; height: .72em; border-radius: 3px; display: inline-block; }
+  .inc-sw--w { background: rgba(214,40,40,.85); }
+  .inc-sw--t { background: rgba(124,58,237,.60); }
   .inc-capt {
     margin-top: 2.2cqh; font-family: system-ui, sans-serif;
     font-size: 2.35cqh; font-style: italic; color: #b02a2a;
