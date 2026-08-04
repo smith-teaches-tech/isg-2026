@@ -167,10 +167,18 @@ function stop() {
 function mig(text) { return h('span', { class: 'inc-mig' }, text); }
 
 function buildMigration() {
-  /* ---- the document (her paragraph, evolving) ---- */
-  const w1   = h('span', { class: 'inc-slot' }, 'condescends');   // → exalts
-  const s2   = h('span', { class: 'inc-slot' });                  // → , and are disconnected…
-  const s3   = h('span', { class: 'inc-slot' });                  // → — its words "imposed"…
+  /* ---- the document (her paragraph, evolving) ----
+     Six slots, six real substitutions from the actual chat:
+       w1  condescends → exalts          (a WORD)
+       s2  (append) disconnected…        (a PHRASE + the reasoning chain)
+       w3  strict → controlling          (the iron-finger read, part 1)
+       s3a (append) its words imposed…   (…part 1 cont.)
+       s3b (append) obedience / tyrant   (the thesis image, part 2) */
+  const w1   = h('span', { class: 'inc-slot' }, 'condescends');
+  const s2   = h('span', { class: 'inc-slot' });
+  const w3   = h('span', { class: 'inc-slot' }, 'strict');
+  const s3a  = h('span', { class: 'inc-slot' });
+  const s3b  = h('span', { class: 'inc-slot' });
   const capt = h('p', { class: 'inc-capt' }, 'She never asks it to write. Every word is hers.');
 
   const doc = h('div', { class: 'inc-doc' },
@@ -179,7 +187,7 @@ function buildMigration() {
     h('div', { class: 'inc-byline' }, 'English · analysis — first draft'),
     h('p', {}, 'He ', w1, ' his tribe, dwelling on how they “never forget this beautiful world” that gave them life.'),
     h('p', {}, 'He casts the Whites as unworthy of nature: they do not value their ancestors, so they cannot value the land they once lived on', s2, '.'),
-    h('p', {}, 'He makes their God seem controlling', s3, '.'),
+    h('p', {}, 'He makes their God seem ', w3, s3a, s3b, '.'),
     capt
   );
 
@@ -194,21 +202,24 @@ function buildMigration() {
     bubbles.push(b); chat.append(b); return b;
   };
 
-  // Round 1 — a WORD
-  const r1s = add('me', 'i wanted to say he makes his tribe feel superior. i think i used the wrong word?');
-  const r1a = add('ai', '“Condescends” means to talk down to them — the opposite. You want a verb that lifts them up: he ', mig('exalts'), ' them, elevates them.');
-  // Round 2 — a PHRASE
-  const r2s = add('me', 'is the connection clear here? the part about the land');
-  const r2a = add('ai', 'Almost — show the steps: they don’t value their ancestors, so not the land, so they’re ', mig('disconnected from nature'), ', so unworthy of it.');
-  // Round 3 — the INTERPRETATION
-  const r3s = add('me', 'whats wrong with the iron finger part');
-  const r3a = add('ai', 'Nothing says “tyrant” outright — you build it. “Iron finger” reads as ', mig('imposed'), '; it’s ', mig('obedience'), ', not spirit. That’s your ', mig('“harsh like a tyrant”'), '.');
+  // 1 — the rule she sets, and the AI's promise (the tell: it "won't write")
+  const b1 = add('me', 'can you check my analysis? don’t rewrite anything — just tell me if the reasoning makes sense');
+  const b2 = add('ai', 'I won’t rewrite it, just point things out. On the verb — “condescends” means to talk down to them, the opposite. You want one that lifts them up: he ', mig('exalts'), ' them, elevates them.');
+  // 2 — the land (a phrase + the whole reasoning chain)
+  const b3 = add('me', 'is the part about the land clear?');
+  const b4 = add('ai', 'Almost. Walk the steps: they don’t value their ancestors → so not the land → so ', mig('disconnected from nature'), ' → so unworthy of it.');
+  // 3 — the iron finger (two words at once)
+  const b5 = add('me', 'whats wrong with the iron finger part?');
+  const b6 = add('ai', '“Iron finger,” “tablets of stone” — that reads as rigid and ', mig('controlling'), ', something ', mig('imposed'), ' on them, not chosen.');
+  // 4 — the thesis image, handed over whole
+  const b7 = add('me', 'so how do i show their god is worse');
+  const b8 = add('ai', 'Nothing in the quote says “tyrant” — you build it. Kept by ', mig('obedience'), ', not love or spirit. There’s your ', mig('“harsh like a tyrant.”'));
 
   for (const b of bubbles) b.classList.add('inc-b--hide');
   capt.classList.add('inc-capt--hide');
 
   const frame = h('div', { class: 'inc-frame' }, doc, chat);
-  return { frame, chat, w1, s2, s3, capt, r1s, r1a, r2s, r2a, r3s, r3a };
+  return { frame, chat, w1, s2, w3, s3a, s3b, capt, b1, b2, b3, b4, b5, b6, b7, b8 };
 }
 
 function startMigration(root) {
@@ -217,38 +228,40 @@ function startMigration(root) {
   run = { dead: false, timers: [], el };
   mount(root, el);
 
-  const show   = b => { if (b) b.classList.remove('inc-b--hide'); scrollChat(box.chat); };
-  const land   = (slot, ...kids) => {
+  const show = b => { if (b) b.classList.remove('inc-b--hide'); scrollChat(box.chat); };
+  const land = (slot, ...kids) => {
     if (!slot) return;
     slot.replaceChildren(...kids.filter(Boolean));
     slot.classList.add('inc-slot--lit');
-    // let the pulse play, then settle
-    schedule(1100, () => slot.classList.remove('inc-slot--lit'));
+    schedule(1100, () => slot.classList.remove('inc-slot--lit'));   // pulse, then settle
   };
+  const T = document.createTextNode.bind(document);
 
-  /* Round 1 — the word swaps in the doc */
-  schedule(700,  () => show(box.r1s));
-  schedule(1900, () => show(box.r1a));
-  schedule(3300, () => { box.w1.textContent = ''; land(box.w1, mig('exalts')); });
+  // 1 — a WORD swaps in
+  schedule(600,  () => show(box.b1));
+  schedule(1900, () => show(box.b2));
+  schedule(3100, () => { box.w1.textContent = ''; land(box.w1, mig('exalts')); });
 
-  /* Round 2 — the phrase is appended */
-  schedule(5000, () => show(box.r2s));
-  schedule(6200, () => show(box.r2a));
-  schedule(7600, () => land(box.s2, document.createTextNode(', '), mig('and are disconnected from nature itself')));
+  // 2 — a PHRASE (and the reasoning chain) is appended
+  schedule(4400, () => show(box.b3));
+  schedule(5600, () => show(box.b4));
+  schedule(6800, () => land(box.s2, T(', '), mig('and are disconnected from nature itself')));
 
-  /* Round 3 — the whole reading arrives */
-  schedule(9200,  () => show(box.r3s));
-  schedule(10500, () => show(box.r3a));
-  schedule(12000, () => land(box.s3,
-    document.createTextNode(' — its words '),
-    mig('“imposed”'),
-    document.createTextNode(' on them, kept not by love and spirit but by '),
-    mig('“obedience”'),
-    document.createTextNode(', a God '),
-    mig('“harsh like a tyrant”')));
+  // 3 — the iron-finger read: her weak word replaced, plus a second word
+  schedule(8100,  () => show(box.b5));
+  schedule(9300,  () => show(box.b6));
+  schedule(10500, () => { box.w3.textContent = ''; land(box.w3, mig('controlling')); });
+  schedule(10900, () => land(box.s3a, T(', its words '), mig('imposed'), T(' on them')));
 
-  /* The quiet line, then hold. */
-  schedule(13600, () => box.capt.classList.remove('inc-capt--hide'));
+  // 4 — the thesis image, handed over whole
+  schedule(12200, () => show(box.b7));
+  schedule(13400, () => show(box.b8));
+  schedule(14600, () => land(box.s3b,
+    T(', kept not by love and spirit but by '), mig('obedience'),
+    T(' — a God '), mig('“harsh like a tyrant”')));
+
+  // the quiet line, then hold
+  schedule(16200, () => box.capt.classList.remove('inc-capt--hide'));
 }
 
 function scrollChat(chat) {
@@ -345,25 +358,25 @@ function injectCSS() {
   /* ---- the doc | chat frame ---- */
   .inc-frame {
     container-type: size;
-    width: 100%; height: 70vh; max-width: 1500px; margin: 0 auto;
+    width: 100%; height: 82vh; max-width: 1500px; margin: 0 auto;
     display: flex; border-radius: 12px; overflow: hidden;
     box-shadow: 0 18px 55px rgba(0,0,0,.55); background: #fff; text-align: left;
   }
   /* the document half */
   .inc-doc {
     flex: 1; min-width: 0; position: relative;
-    padding: 5.4cqh 4.2cqw 3cqh; overflow: hidden;
+    padding: 4.6cqh 4.2cqw 3cqh; overflow: hidden;
     background: #fff; color: #3a4657;
     font-family: Georgia, "Iowan Old Style", serif;
-    font-size: 3.35cqh; line-height: 1.6;
+    font-size: 2.95cqh; line-height: 1.58;
   }
   .inc-doc h4 {
-    font-family: Georgia, serif; font-weight: 700; font-size: 4.5cqh;
+    font-family: Georgia, serif; font-weight: 700; font-size: 3.9cqh;
     color: #1a2235; margin: 0 0 .5cqh; line-height: 1.18;
   }
-  .inc-byline { font-size: 2.4cqh; color: #70757a; margin-bottom: 3.4cqh;
+  .inc-byline { font-size: 2.1cqh; color: #70757a; margin-bottom: 2.6cqh;
     font-family: system-ui, sans-serif; }
-  .inc-doc p { margin: 0 0 2.6cqh; }
+  .inc-doc p { margin: 0 0 2cqh; }
   .inc-label {
     position: absolute; top: 1.8cqh; right: 2cqw;
     font-family: ui-monospace, monospace; font-size: 1.95cqh;
@@ -389,32 +402,32 @@ function injectCSS() {
     100% { background: rgba(214,40,40,.0); }
   }
   .inc-capt {
-    margin-top: 2.8cqh; font-family: system-ui, sans-serif;
-    font-size: 2.7cqh; font-style: italic; color: #b02a2a;
+    margin-top: 2.2cqh; font-family: system-ui, sans-serif;
+    font-size: 2.35cqh; font-style: italic; color: #b02a2a;
     transition: opacity .5s var(--ease);
   }
   .inc-capt--hide { opacity: 0; }
 
   /* the chat half */
   .inc-chat {
-    width: 41cqw; flex-shrink: 0; overflow: hidden;
+    width: 42cqw; flex-shrink: 0; overflow: hidden;
     background: #f2f3f6; border-left: 1px solid #e2e5ea;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    padding: 0 2.6cqw 3cqh;
-    display: flex; flex-direction: column; gap: 1.5cqh;
+    padding: 0 2.6cqw 2.4cqh;
+    display: flex; flex-direction: column; gap: 1.05cqh;
     transform: translateY(var(--inc-shift, 0));
     transition: transform .5s var(--ease);
   }
   .inc-chat__hd {
     position: sticky; top: 0; display: flex; align-items: center; gap: 1cqh;
-    padding: 2.4cqh 0 1.5cqh; margin-bottom: .4cqh;
-    font-size: 2.5cqh; font-weight: 700; color: #40414f;
+    padding: 2cqh 0 1.2cqh; margin-bottom: .3cqh;
+    font-size: 2.2cqh; font-weight: 700; color: #40414f;
     background: #f2f3f6; border-bottom: 1px solid #e2e5ea;
   }
-  .inc-dot { width: 2.9cqh; height: 2.9cqh; border-radius: 99px; background: #10a37f; flex-shrink: 0; }
+  .inc-dot { width: 2.6cqh; height: 2.6cqh; border-radius: 99px; background: #10a37f; flex-shrink: 0; }
   .inc-b {
-    max-width: 92%; padding: 1.7cqh 2.1cqh; border-radius: 12px;
-    font-size: 2.45cqh; line-height: 1.4;
+    max-width: 93%; padding: 1.35cqh 1.75cqh; border-radius: 12px;
+    font-size: 2.02cqh; line-height: 1.36;
     transition: opacity .4s var(--ease), transform .4s var(--ease);
   }
   .inc-b--hide { opacity: 0; transform: translateY(1.4cqh); }
