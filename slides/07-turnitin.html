@@ -1,0 +1,115 @@
+<!-- SEGMENT 7 · TURNITIN — THE FALSE-POSITIVE TEST · ~4 min
+     Interaction: i4-flag-rate (hold → reveal 0)
+
+     Seg 6 ended on "Are you skeptical? Let me convince you." This is the
+     first move of the convincing: kill the false-positive fear cold, using
+     the room's OWN distrust as the setup.
+
+     Beat 0 is an ORAL cold-open — Michael asks a show of hands ("who actually
+     trusts Turnitin's AI detector?"). The detector has a genuinely rough
+     online reputation (false positives, wrongly-accused students, a few
+     universities switching it off), so the room's hands stay down. THAT
+     scepticism is what the 0 then demolishes.
+
+     Beat 1 sets up the test: 44 documents Michael knew the authorship of —
+     a mix of essays, all written before ChatGPT existed, none written with
+     AI. Forward opens the guess (i4): a slider 0–44, held, then revealed at
+     ZERO. The reveal also lands the counter-punch — the one paper he DID
+     write with AI, which Turnitin caught. distrust → test → 0 → and it's
+     not blind.
+
+     Data (Michael's own classroom research; present as REAL):
+       44 known-authorship documents → 0 flagged (0 false positives).
+       1 AI-written paper planted in the test → caught at 100%.
+
+     Beats (one .stack, swap in place — screen is overflow:hidden):
+       0  the reputation + "do you trust it?"  (oral hands-up)
+       1  "So I tested it." — 44 docs → Turnitin  (build-and-hold)
+       → forward opens i4-flag-rate.
+
+     Build-and-hold: keyframes scoped to [aria-hidden="false"], iteration 1 +
+     fill both. Pure CSS, no script. ch max-widths on the HEADINGS, never a
+     wrapper (the seg-5/6 gotcha). -->
+
+<div class="slide wide s7">
+
+  <style>
+  @keyframes s7fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  @keyframes s7pop  { from{opacity:0;transform:scale(.9)}        to{opacity:1;transform:none} }
+  @keyframes s7chip { from{opacity:0;transform:translateY(12px) scale(.8)} to{opacity:1;transform:none} }
+
+  /* beat 0 · the reputation */
+  .s7-rep .rep-kick { color:var(--accent-hot); }
+  .s7-rep[aria-hidden="false"] .rep-lead  { animation:s7fade .6s var(--ease) both; }
+  .s7-rep[aria-hidden="false"] .rep-quote { animation:s7fade .6s var(--ease) .35s both; }
+  .s7-rep[aria-hidden="false"] .rep-ask   { animation:s7pop  .6s var(--ease) 1.0s both; }
+
+  /* beat 1 · the test */
+  .s7-test .test-grid {
+    display:grid; grid-template-columns:repeat(11, 1fr); gap:0.4vw;
+    width:min(52vw,560px); margin:0 auto var(--s-4);
+  }
+  .s7-test .doc {
+    aspect-ratio:3/4; border-radius:3px;
+    background:rgba(53,214,164,.12); border:1px solid var(--accent-cool);
+    box-shadow:inset 0 -2px 0 rgba(53,214,164,.25);
+  }
+  /* row-wave cascade (11 per row → 4 rows = 44) */
+  .s7-test[aria-hidden="false"] .doc { animation:s7chip .5s var(--ease) both; }
+  .s7-test[aria-hidden="false"] .doc:nth-child(n+12) { animation-delay:.12s; }
+  .s7-test[aria-hidden="false"] .doc:nth-child(n+23) { animation-delay:.24s; }
+  .s7-test[aria-hidden="false"] .doc:nth-child(n+34) { animation-delay:.36s; }
+
+  .s7-test .test-arrow { font-size:var(--t-xl); color:var(--ink-faint); line-height:1; margin:var(--s-1) 0; }
+  .s7-test .test-box {
+    display:inline-block; padding:var(--s-2) var(--s-6); border-radius:var(--radius);
+    background:var(--bg-input); border:2px solid var(--line-strong);
+    font-weight:800; font-size:var(--t-lg);
+  }
+  .s7-test[aria-hidden="false"] .test-cap   { animation:s7fade .5s var(--ease) .5s both; }
+  .s7-test[aria-hidden="false"] .test-arrow { animation:s7fade .5s var(--ease) .7s both; }
+  .s7-test[aria-hidden="false"] .test-box   { animation:s7pop  .5s var(--ease) .95s both; }
+  .s7-test[aria-hidden="false"] .test-prompt{ animation:s7fade .5s var(--ease) 1.35s both; }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — the reputation + the hands-up question -->
+    <div data-until="0" class="s7-rep center" style="align-self:center;width:100%">
+      <span class="pill rep-kick" style="display:inline-block;margin-bottom:var(--s-5)">let me convince you</span>
+      <p class="rep-lead muted" style="font-size:var(--t-lg);max-width:42ch;margin:0 auto var(--s-3)">
+        Turnitin&rsquo;s AI detector has a bad reputation online &mdash;
+      </p>
+      <p class="rep-quote faint" style="font-size:var(--t-base);max-width:46ch;margin:0 auto var(--s-7)">
+        false positives, students wrongly accused, a few universities switching it off.
+      </p>
+      <h1 class="rep-ask" style="max-width:18ch;margin:0 auto;line-height:1.15">
+        Do you actually <span style="color:var(--accent-hot)">trust</span> it?
+      </h1>
+    </div>
+
+    <!-- BEAT 1 — the test: 44 documents → Turnitin -->
+    <div data-step="1" class="s7-test center" style="align-self:center;width:100%">
+      <h2 class="muted" style="margin-bottom:var(--s-5);max-width:22ch;margin-left:auto;margin-right:auto">
+        I didn&rsquo;t either. So I tested it.
+      </h2>
+      <div class="test-grid" aria-hidden="true">
+        <span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span>
+        <span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span>
+        <span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span>
+        <span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span><span class="doc"></span>
+      </div>
+      <p class="test-cap" style="font-size:var(--t-base);color:var(--ink);max-width:56ch;margin:0 auto var(--s-3)">
+        <b style="color:var(--accent-cool)">44 documents</b> I knew the author of &mdash;
+        a mix of essays, <b>all written before ChatGPT existed</b>. None by AI.
+      </p>
+      <div class="test-arrow">&darr;</div>
+      <div class="test-box">Turnitin</div>
+      <p class="test-prompt faint" style="margin-top:var(--s-4);font-size:var(--t-base)">
+        So &mdash; how many came back flagged?
+      </p>
+    </div>
+
+  </div><!-- /.stack -->
+
+</div>
