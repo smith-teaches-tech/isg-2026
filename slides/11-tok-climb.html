@@ -1,0 +1,156 @@
+<!-- SEGMENT 11 · TOK — THE CLIMB · ~2 min · NO interaction
+     (the gauge, seg 10, ran just before this — the room has committed a number)
+
+     THE POP. The whole research arc lands here. Three dated columns show the
+     same detector, same 20% line, across three years — and the flag rate
+     climbs off the floor the FP test established:
+
+        2022 (pre-ChatGPT)   flagged 0%    · any signal 0%
+        Sept 2025 · EE       flagged 23.5% · any signal 47%
+        Jan 2026 · TOK       flagged 38.2% · any signal 74%
+
+     Each bar is STACKED, reusing segs 8–9 colour language: red (flagged >20%)
+     at the base, amber (asterisk / trace) on top — together they are the
+     any-AI-signal total; the empty space above is clean work. So one bar shows
+     BOTH metrics at once (Michael's "show both" call). Value labels sit in a
+     clean two-line block ABOVE each stack (any% amber over flagged% red).
+
+     The causal spine: we caught them (seg 8), we offered amnesty and they
+     confessed (seg 9), we did NOTHING — and one semester later it jumped +63%.
+     The room's gauge guess (seg 10) sits against that 74%. Hands to inception.
+
+     Beats (one .stack; the chart persists from step 1 and text layers on):
+       0  the recap — caught them / amnesty / did nothing → what happened next?
+       1  THE CHART — bars climb left→right, TOK tallest (build-and-hold)
+       2  the jump — +63% Sept→Jan + "we did nothing. look what happened."
+       3  forward — still no consequences → they kept going (→ inception)
+
+     Build-and-hold: keyframes scoped to [aria-hidden="false"], iter 1 + fill
+     both. Heights are literal data % of the track. Pure CSS, no script. -->
+
+<div class="slide wide s11">
+
+  <style>
+  @keyframes s11fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  @keyframes s11grow { from{height:0} }               /* to = element's own height */
+  @keyframes s11pop  { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:none} }
+
+  /* beat 0 · recap */
+  .s11-recap[aria-hidden="false"] .r1 { animation:s11fade .5s var(--ease) both; }
+  .s11-recap[aria-hidden="false"] .r2 { animation:s11fade .5s var(--ease) .35s both; }
+  .s11-recap[aria-hidden="false"] .r3 { animation:s11fade .5s var(--ease) .7s both; }
+  .s11-recap[aria-hidden="false"] .rq { animation:s11fade .6s var(--ease) 1.15s both; }
+  .s11-recap .rline b { color:var(--accent-cool); }
+
+  /* beat 1 · the chart */
+  .s11-chart { width:min(84vw,860px); margin:0 auto; }
+  .s11-cols  { display:flex; align-items:flex-end; justify-content:center; gap:min(6vw,80px); }
+  .s11-col   { display:flex; flex-direction:column; align-items:center; width:22%; }
+  .s11-track { position:relative; width:100%; height:32vh; display:flex; justify-content:center; }
+  .s11-bar   { position:absolute; bottom:0; width:min(9vw,88px); }
+  .s11-flag  { background:var(--accent-hot);  border-radius:4px 4px 0 0; z-index:2; }
+  .s11-ast   { background:rgba(255,171,76,.9); border-radius:4px 4px 0 0; z-index:1; }
+
+  /* value labels: a two-line block anchored to the TOP of the stack */
+  .s11-vlab  { position:absolute; left:50%; transform:translate(-50%,-100%);
+               padding-bottom:6px; text-align:center; white-space:nowrap; line-height:1.1; }
+  .s11-vlab .any  { font-family:var(--font-mono); font-weight:800; font-size:var(--t-lg); color:var(--accent-warm); }
+  .s11-vlab .flag { font-family:var(--font-mono); font-weight:700; font-size:var(--t-sm); color:var(--accent-hot); margin-top:2px; }
+
+  .s11-xlab  { margin-top:var(--s-3); text-align:center; }
+  .s11-xlab .yr { font-weight:700; font-size:var(--t-lg); color:var(--ink); }
+  .s11-xlab .as { font-size:var(--t-sm); color:var(--ink-dim); }
+
+  /* grow, staggered left→right; amber after its red */
+  .s11-chart[aria-hidden="false"] .s11-flag { animation:s11grow .8s var(--ease) both; }
+  .s11-chart[aria-hidden="false"] .s11-ast  { animation:s11grow .7s var(--ease) both; }
+  .s11-chart[aria-hidden="false"] .c1 .s11-flag { animation-delay:.1s } .s11-chart[aria-hidden="false"] .c1 .s11-ast { animation-delay:.5s }
+  .s11-chart[aria-hidden="false"] .c2 .s11-flag { animation-delay:.5s } .s11-chart[aria-hidden="false"] .c2 .s11-ast { animation-delay:.9s }
+  .s11-chart[aria-hidden="false"] .c3 .s11-flag { animation-delay:.9s } .s11-chart[aria-hidden="false"] .c3 .s11-ast { animation-delay:1.3s }
+  .s11-chart[aria-hidden="false"] .s11-vlab  { animation:s11fade .5s var(--ease) 1.7s both; }
+  .s11-chart[aria-hidden="false"] .s11-xlab  { animation:s11fade .5s var(--ease) .2s both; }
+
+  .s11-legend { display:flex; gap:var(--s-5); justify-content:center; flex-wrap:wrap;
+                font-size:var(--t-sm); color:var(--ink-dim); margin-top:var(--s-6); }
+  .s11-legend span { display:inline-flex; align-items:center; gap:var(--s-2); }
+  .s11-legend i { width:.85em; height:.85em; border-radius:2px; display:inline-block; }
+  .s11-chart[aria-hidden="false"] .s11-legend { animation:s11fade .5s var(--ease) 2.0s both; }
+
+  /* beat 2 · the jump + line */
+  .s11-jump { margin-top:var(--s-5); }
+  .s11-jump .pct { display:inline-block; padding:var(--s-2) var(--s-5); border-radius:99px;
+                   background:rgba(255,92,92,.14); border:1px solid var(--accent-hot);
+                   color:var(--accent-hot); font-weight:800; font-size:var(--t-xl); font-family:var(--font-mono); }
+  .s11-jump .said { margin-top:var(--s-4); font-size:var(--t-xl); color:var(--ink); max-width:40ch; margin-inline:auto; }
+  .s11-jump[aria-hidden="false"] .pct  { animation:s11pop  .55s var(--ease) both; }
+  .s11-jump[aria-hidden="false"] .said { animation:s11fade .6s var(--ease) .3s both; }
+
+  /* beat 3 · forward */
+  .s11-fwd { margin-top:var(--s-4); }
+  .s11-fwd[aria-hidden="false"] { animation:s11fade .6s var(--ease) both; }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — the recap -->
+    <div data-until="0" class="s11-recap center" style="align-self:center;width:100%">
+      <div class="rline r1" style="font-size:var(--t-2xl);font-weight:700">We <b>caught</b> them.</div>
+      <div class="rline r2" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">We offered <b>amnesty</b>.</div>
+      <div class="rline r3" style="font-size:var(--t-2xl);font-weight:700;margin-top:var(--s-3)">We did <b style="color:var(--accent-hot)!important">nothing</b>.</div>
+      <p class="rq muted" style="font-size:var(--t-lg);margin-top:var(--s-6)">So the next semester, I ran their TOK essays. Watch.</p>
+    </div>
+
+    <!-- BEAT 1+ — the chart (persists), with jump (step 2) and forward (step 3) -->
+    <div data-step="1" class="s11-chart center" style="align-self:center;width:100%">
+
+      <div class="s11-cols">
+        <!-- col 1 · 2022 -->
+        <div class="s11-col c1">
+          <div class="s11-track">
+            <div class="s11-bar s11-ast"  style="bottom:0%; height:0%"></div>
+            <div class="s11-bar s11-flag" style="height:0.6%"></div>
+            <div class="s11-vlab" style="bottom:2%"><div class="any">0%</div></div>
+          </div>
+          <div class="s11-xlab"><div class="yr">2022</div><div class="as">pre-ChatGPT</div></div>
+        </div>
+        <!-- col 2 · Sept 2025 EE -->
+        <div class="s11-col c2">
+          <div class="s11-track">
+            <div class="s11-bar s11-ast"  style="bottom:23.5%; height:23.5%"></div>
+            <div class="s11-bar s11-flag" style="height:23.5%"></div>
+            <div class="s11-vlab" style="bottom:47%"><div class="any">47%</div><div class="flag">23.5% flagged</div></div>
+          </div>
+          <div class="s11-xlab"><div class="yr">Sept 2025</div><div class="as">Extended Essay</div></div>
+        </div>
+        <!-- col 3 · Jan 2026 TOK -->
+        <div class="s11-col c3">
+          <div class="s11-track">
+            <div class="s11-bar s11-ast"  style="bottom:38.2%; height:35.8%"></div>
+            <div class="s11-bar s11-flag" style="height:38.2%"></div>
+            <div class="s11-vlab" style="bottom:74%"><div class="any">74%</div><div class="flag">38.2% flagged</div></div>
+          </div>
+          <div class="s11-xlab"><div class="yr">Jan 2026</div><div class="as">TOK essay</div></div>
+        </div>
+      </div>
+
+      <div class="s11-legend">
+        <span><i style="background:var(--accent-hot)"></i> flagged &gt;20%</span>
+        <span><i style="background:rgba(255,171,76,.9)"></i> + asterisk (*) = any AI signal</span>
+      </div>
+
+      <!-- BEAT 2 — the jump -->
+      <div data-step="2" class="s11-jump">
+        <span class="pct">+63% flagged in one semester</span>
+        <p class="said">We did nothing &mdash; and it got <b style="color:var(--accent-hot)">worse</b>. Look what happened.</p>
+      </div>
+
+      <!-- BEAT 3 — forward to inception -->
+      <div data-step="3" class="s11-fwd">
+        <p class="faint" style="font-size:var(--t-lg)">Still no consequences. So they kept going&hellip;</p>
+      </div>
+
+    </div><!-- /chart -->
+
+  </div><!-- /.stack -->
+
+</div>
