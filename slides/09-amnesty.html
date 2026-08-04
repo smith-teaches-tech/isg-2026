@@ -1,0 +1,158 @@
+<!-- SEGMENT 9 · THE AMNESTY — WHO CAME FORWARD · ~3 min · NO interaction
+
+     The emotional hinge, and the validation beat. Seg 8 ended on "so I asked
+     them." Here's what happened when I did. The KILLER is NOT the confession
+     rate — it's that the confessions and the flags were the SAME LIST. Amnesty
+     was voluntary; the people who came forward were, almost exactly, the people
+     Turnitin had flagged. 20 of the 26 flagged confessed; only ONE unflagged
+     student came forward. The students proved Turnitin right, themselves — and
+     the lone unflagged confessor means if the tool erred, it erred by
+     UNDER-counting, never by false accusation. (NO "disputed flags" language.)
+
+     The flagged mostly claimed MINIMAL use — brainstorming, grammar, smoothing.
+     That is planted here and paid off in inception (seg 12): they came forward
+     because they think polishing isn't really cheating. And there were no real
+     consequences — we couldn't prove more than they admitted. That "we did
+     nothing" is the setup the TOK climb (seg 11) then punishes.
+
+     The giant "1" deliberately rhymes with seg 7's giant "0".
+
+     Data (REAL — Michael's classes; present as real):
+       91 papers (AP Lang + EE amnesty) · 26 flagged · 20 flagged confessed (77%)
+       · 6 flagged stayed silent · 1 UNFLAGGED student admitted (false negative).
+
+     Beats (one .stack, screen is overflow:hidden):
+       0  the offer — voluntary amnesty, no penalty, just the truth
+       1  who came forward — 26 flagged, 20 owned up (77%)
+       2  the lone 1 — the only unflagged confessor → same list
+       3  minimal use — "barely used it" (the inception plant)
+       4  no consequences — couldn't prove more than they admitted → gauge
+
+     Build-and-hold: keyframes scoped to [aria-hidden="false"], iter 1 + fill
+     both. Pure CSS, no script. ch max-widths on HEADINGS only. -->
+
+<div class="slide wide s9">
+
+  <style>
+  @keyframes s9fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  @keyframes s9pop  { from{opacity:0;transform:scale(.9)}        to{opacity:1;transform:none} }
+  @keyframes s9chip { from{opacity:0;transform:translateY(9px) scale(.7)} to{opacity:1;transform:none} }
+  @keyframes s9big  { from{opacity:0;transform:scale(.55)}       to{opacity:1;transform:none} }
+
+  /* beat 0 · the offer */
+  .s9-offer[aria-hidden="false"] .o-kick { animation:s9fade .5s var(--ease) both; }
+  .s9-offer[aria-hidden="false"] h1      { animation:s9fade .6s var(--ease) .15s both; }
+  .s9-offer[aria-hidden="false"] .o-sub  { animation:s9fade .6s var(--ease) .55s both; }
+
+  /* beat 1 · who came forward */
+  .s9-chips { display:grid; grid-template-columns:repeat(13,1fr); gap:0.45vw;
+              width:min(48vw,520px); margin:0 auto var(--s-4); }
+  .s9-chips .c { aspect-ratio:3/4; border-radius:3px; }
+  .s9-chips .conf   { background:var(--accent-hot); border:1px solid var(--accent-hot); }
+  .s9-chips .silent { background:transparent; border:1px dashed var(--line-strong); }
+  .s9-flagged[aria-hidden="false"] .c { animation:s9chip .4s var(--ease) both; }
+  .s9-flagged[aria-hidden="false"] .c:nth-child(n+14) { animation-delay:.45s; }
+  .s9-legend { display:flex; gap:var(--s-5); justify-content:center; flex-wrap:wrap;
+               font-size:var(--t-sm); color:var(--ink-dim); margin-bottom:var(--s-5); }
+  .s9-legend span { display:inline-flex; align-items:center; gap:var(--s-2); }
+  .s9-legend i { width:.85em; height:.85em; border-radius:2px; display:inline-block; }
+  .s9-tile { display:inline-block; padding:var(--s-3) var(--s-6); border-radius:var(--radius);
+             background:var(--bg-raised); border:1px solid var(--accent-hot); }
+  .s9-tile .num { font-size:var(--t-3xl); font-weight:800; line-height:1; font-family:var(--font-mono); color:var(--accent-hot); }
+  .s9-tile .lab { font-size:var(--t-base); color:var(--ink-dim); margin-top:var(--s-2); }
+  .s9-flagged[aria-hidden="false"] .s9-h    { animation:s9fade .5s var(--ease) both; }
+  .s9-flagged[aria-hidden="false"] .s9-legend { animation:s9fade .5s var(--ease) 1.0s both; }
+  .s9-flagged[aria-hidden="false"] .s9-tile { animation:s9pop  .5s var(--ease) 1.15s both; }
+
+  /* beat 2 · the lone 1 */
+  .s9-one[aria-hidden="false"] .one-cap  { animation:s9fade .5s var(--ease) both; }
+  .s9-one[aria-hidden="false"] .one-num  { animation:s9big  .7s var(--ease) .25s both; }
+  .s9-one[aria-hidden="false"] .one-punch{ animation:s9fade .6s var(--ease) .8s both; }
+  .s9-one[aria-hidden="false"] .one-sub  { animation:s9fade .6s var(--ease) 1.2s both; }
+
+  /* beat 3 · minimal use */
+  .s9-min .q-row { display:flex; gap:var(--s-4); justify-content:center; flex-wrap:wrap; margin:var(--s-5) 0; }
+  .s9-min .q { padding:var(--s-3) var(--s-5); border-radius:var(--radius); background:var(--bg-raised);
+               border:1px solid var(--line); border-left:3px solid var(--accent-warm);
+               font-style:italic; color:var(--ink); font-size:var(--t-lg); }
+  .s9-min[aria-hidden="false"] .m-h   { animation:s9fade .5s var(--ease) both; }
+  .s9-min[aria-hidden="false"] .q:nth-child(1){ animation:s9pop .45s var(--ease) .35s both; }
+  .s9-min[aria-hidden="false"] .q:nth-child(2){ animation:s9pop .45s var(--ease) .6s both; }
+  .s9-min[aria-hidden="false"] .q:nth-child(3){ animation:s9pop .45s var(--ease) .85s both; }
+  .s9-min[aria-hidden="false"] .m-tag { animation:s9fade .6s var(--ease) 1.2s both; }
+
+  /* beat 4 · no consequences */
+  .s9-none[aria-hidden="false"] h1       { animation:s9fade .6s var(--ease) both; }
+  .s9-none[aria-hidden="false"] .n-big   { animation:s9pop  .6s var(--ease) .4s both; }
+  .s9-none[aria-hidden="false"] .n-sub   { animation:s9fade .6s var(--ease) .9s both; }
+  </style>
+
+  <div class="stack" style="margin-top:var(--s-4)">
+
+    <!-- BEAT 0 — the offer -->
+    <div data-until="0" class="s9-offer center" style="align-self:center;width:100%">
+      <span class="o-kick pill" style="display:inline-block;margin-bottom:var(--s-5)">the amnesty</span>
+      <h1 style="max-width:20ch;margin:0 auto;line-height:1.15">So I offered them amnesty.</h1>
+      <p class="o-sub muted" style="font-size:var(--t-lg);max-width:44ch;margin:var(--s-5) auto 0">
+        No penalty. No grade change. Just the truth &mdash; did you use AI? Coming forward was
+        <b style="color:var(--ink)">completely voluntary</b>.
+      </p>
+    </div>
+
+    <!-- BEAT 1 — who came forward -->
+    <div data-step="1" data-until="1" class="s9-flagged center" style="align-self:center;width:100%">
+      <h2 class="s9-h muted" style="margin-bottom:var(--s-5);max-width:30ch;margin-left:auto;margin-right:auto">
+        It was voluntary. So who came forward?
+      </h2>
+      <div class="s9-chips" aria-hidden="true">
+        <!-- 20 confessed -->
+        <span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span><span class="c conf"></span>
+        <!-- 6 silent -->
+        <span class="c silent"></span><span class="c silent"></span><span class="c silent"></span><span class="c silent"></span><span class="c silent"></span><span class="c silent"></span>
+      </div>
+      <div class="s9-legend">
+        <span><i style="background:var(--accent-hot)"></i> came forward &middot; 20</span>
+        <span><i style="border:1px dashed var(--line-strong)"></i> stayed silent &middot; 6</span>
+      </div>
+      <div class="s9-tile"><div class="num">77%</div><div class="lab">of the 26 Turnitin flagged came clean</div></div>
+    </div>
+
+    <!-- BEAT 2 — the lone 1 -->
+    <div data-step="2" data-until="2" class="s9-one center" style="align-self:center;width:100%">
+      <p class="one-cap muted" style="font-size:var(--t-lg);max-width:34ch;margin:0 auto">
+        And students Turnitin did <b style="color:var(--ink)">not</b> flag, who came forward anyway?
+      </p>
+      <div class="one-num mono" style="font-size:clamp(5rem,15vw,15rem);line-height:.9;font-weight:800;color:var(--accent-warm);margin:var(--s-3) 0">1</div>
+      <p class="one-punch" style="font-size:var(--t-xl);max-width:34ch;margin:0 auto;color:var(--ink)">
+        The list Turnitin flagged and the list who confessed were the <b style="color:var(--accent-cool)">same list</b>.
+      </p>
+      <p class="one-sub faint" style="max-width:46ch;margin:var(--s-4) auto 0">
+        If the detector was ever wrong, it was wrong by <i>missing</i> one &mdash; never by accusing an innocent student.
+      </p>
+    </div>
+
+    <!-- BEAT 3 — minimal use (the inception plant) -->
+    <div data-step="3" data-until="3" class="s9-min center" style="align-self:center;width:100%">
+      <h2 class="m-h muted" style="max-width:28ch;margin-left:auto;margin-right:auto">And what did they say they&rsquo;d done?</h2>
+      <div class="q-row">
+        <span class="q">&ldquo;Just brainstorming.&rdquo;</span>
+        <span class="q">&ldquo;Cleaned up my grammar.&rdquo;</span>
+        <span class="q">&ldquo;Smoothed a few sentences.&rdquo;</span>
+      </div>
+      <p class="m-tag" style="font-size:var(--t-xl);color:var(--ink)">
+        &ldquo;I <b>barely</b> used it.&rdquo; <span class="faint" style="font-size:var(--t-base)">(Remember that.)</span>
+      </p>
+    </div>
+
+    <!-- BEAT 4 — no consequences -->
+    <div data-step="4" class="s9-none center" style="align-self:center;width:100%">
+      <h1 style="max-width:20ch;margin:0 auto">And the consequences?</h1>
+      <p class="n-big" style="font-size:var(--t-3xl);font-weight:800;color:var(--accent-hot);margin:var(--s-5) auto 0">There weren&rsquo;t any.</p>
+      <p class="n-sub faint" style="max-width:50ch;margin:var(--s-5) auto 0;font-size:var(--t-lg)">
+        We caught it. They admitted it. And we couldn&rsquo;t prove a thing beyond &ldquo;barely.&rdquo;
+      </p>
+    </div>
+
+  </div><!-- /.stack -->
+
+</div>
