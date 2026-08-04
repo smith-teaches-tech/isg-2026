@@ -37,7 +37,7 @@
     "i2-fake-history": { "label": "I-2 · Can it be faked?",     "reveal": "hold",  "built": true  },
     "i3-how-much":     { "label": "I-3 · How much writing?",   "reveal": "hold",  "built": true },
     "i4-flag-rate":    { "label": "I-4 · Guess the flag rate", "reveal": "hold",  "built": true  },
-    "i5-inception":    { "label": "I-5 · Inception Effect",    "reveal": "hold",  "built": false },
+    "i5-inception":    { "label": "I-5 · Inception Effect",    "reveal": "hold",  "built": true  },
     "i6-the-line":     { "label": "I-6 · Where's the line?",   "reveal": "hold",  "built": false },
     "i7-papertrail":   { "label": "I-7 · Papertrail",          "reveal": "live",  "built": false },
     "i8-commit":       { "label": "I-8 · Commit + gallery",    "reveal": "live",  "built": false }
